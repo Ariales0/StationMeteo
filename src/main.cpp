@@ -1,0 +1,304 @@
+/**
+ * Fichier principal @file main.cpp
+ *
+ * Fonction setup()
+ * Fonction loop()
+ * Méthode lectureBoutons()
+ * Méthode lectureMyTemp()
+ *
+ * @author Lecourt Quentin
+ * @version 2.1
+ * @date 28/04/2024
+ */
+
+#pragma region DEFINITIONS
+// Section Serial
+#define SERIAL_SPEED 9600
+
+// Section de l'écran OLED (Dimensions, broche de réinitialisation, broche des données...)
+#define SCREEN_WIDTH 128 // Largeur de l'écran OLED en pixels
+#define SCREEN_HEIGHT 64 // Hauteur de l'écran OLED en pixels
+#define OLED_RESET 0     // Pin RESET pour l'ecran Oled
+
+// Section de la broche et du type de capteur DTH
+#define DHTPIN 32
+#define DHTTYPE DHT22
+
+// Broches des boutons utilisées
+#define BROCHE_BOUTON_BLEU 26
+#define BROCHE_BOUTON_VERT 27
+#define BROCHE_BOUTON_JAUNE 14
+
+/*-----------INCLUSIONS-----------*/
+#include <Arduino.h>
+// --- Classes de lib
+#include "MyOled.h"
+#include "MyTemp.h"
+#include "MyScreenString.h"
+#include "MyProjectButton.h"
+// --- Autre(s) fichier(s)
+#include "Enums.h"
+
+/*-----------OBJETS-----------*/
+MyOled *myOled = NULL;
+MyTemp *myTemp = NULL;
+MyScreenString *myScreenString = NULL;
+MyProjectButton *boutonBleu = NULL;
+MyProjectButton *boutonVert = NULL;
+MyProjectButton *boutonJaune = NULL;
+
+/*-----------CONSTANTES-----------*/
+// --- Temperature d'erreur revoyé par MyTemp si aucune valeur obtenue
+const float TEMPERATURE_ERREUR = -1000;
+const float HUMIDITE_ERREUR = -1;
+
+// Constante position x et y des chaine caractere
+const int POSITION_X_STATION_METEO = 1;
+const int POSITION_Y_STATION_METEO = 2;
+
+const int POSITION_X_TITRE = 23;
+const int POSITION_Y_TITRE = 20;
+
+const int POSITION_X_DTH_ERREUR = 32;
+const int POSITION_Y_DTH_ERREUR = 40;
+
+const int POSITION_X_BAD_PIN_USED = 10;
+const int POSITION_X_READING_ERROR = 20;
+const int POSITION_Y_ERROR_DETAIL = 55;
+
+const int POSITION_X_VALUE = 18;
+const int POSITION_Y_VALUE = 25;
+
+/*-----------VARIABLES-----------*/
+bool humiditySurEcran = false;               // Etat de l'affichage de l'humidité.
+LANGUAGE langueUtilisee = FRENCH;            // Langue d'affichage.
+UNITY_TEMP uniteTempUtilise = UNITY_CELSIUS; // Unité de la température.
+MESSAGE_KEYS unityMessage = CELSIUS;         // Unité de la température affichée.
+// Variables des dernières données obtenu
+float derniereTemperature = 0;
+float derniereHumidite = 0;
+float temperatureObtenue = 0;
+float humiditeObtenue = 0;
+
+// Sert à actualiser l'affichage lors de l'appui d'un bouton
+bool actualiserAffichage = false;
+
+/*-----------DÉLAIS ET DIVISEURS-----------*/
+//  Les délais sont en millisecondes
+const int DELAI_MY_OLED = 100;  // Délai accordé à l'objet myOled pour réagir.
+const int DELAI_MY_TEMP = 2000; // Le DHT22 a un temps de rafraîchissement de 2 secondes.
+const int DELAI_LOOP = 10;      // Loop toutes les 10 ms réagir rapidement à la pression des boutons.
+
+// On appelle les méthodes de MyTemp (DELAI_MY_TEMP / DELAI_LOOP) fois par loop. Ainsi, on peut lire rapidement les boutons et lire les données du DTH22 toutes les 2s.
+const int DIVIEUR_MYTEMP_LOOP = DELAI_MY_TEMP / DELAI_LOOP;
+int decompteMyTempLoop = DIVIEUR_MYTEMP_LOOP;
+
+#pragma endregion DEFINITIONS
+#pragma region METHODES
+
+/**
+ * lectureMyTemp()
+ *
+ * @brief Méthode appelée dans la boucle principale pour afficher la température ou l'humidité sur l'écran OLED.
+ * L'humidité ou la temprérature est lue.
+ * Si la valeur est différente de la dernière valeur obtenue ou si l'affichage est à actualiser on affiche sur l'écran OLED.
+ */
+void lectureMyTemp()
+{
+  if (humiditySurEcran)
+  {
+    humiditeObtenue = myTemp->getHumidity();
+    if (humiditeObtenue != HUMIDITE_ERREUR)
+    {
+      if (humiditeObtenue != derniereHumidite || actualiserAffichage)
+      {
+        char humiditySTR[15];
+        sprintf(humiditySTR, "%.2f %s", humiditeObtenue, myScreenString->getMessage(HUMIDITY));
+        derniereHumidite = humiditeObtenue;
+
+        actualiserAffichage = false;
+
+        myOled->clearDisplay();
+        myOled->setTextSize(1);
+        myOled->printIt(POSITION_X_STATION_METEO, POSITION_Y_STATION_METEO, myScreenString->getMessage(METEO_STATION), true);
+        myOled->setTextSize(2);
+        myOled->printIt(POSITION_X_VALUE, POSITION_Y_VALUE, humiditySTR, true);
+      }
+    }
+    else
+    {
+      myOled->printIt(POSITION_X_DTH_ERREUR, POSITION_Y_DTH_ERREUR, myScreenString->getMessage(DHT22_ERROR), true);
+      myOled->printIt(POSITION_X_READING_ERROR, POSITION_Y_ERROR_DETAIL, myScreenString->getMessage(READING_ERROR), true);
+    }
+  }
+  else
+  {
+    temperatureObtenue = myTemp->getTemperature();
+    if (temperatureObtenue != TEMPERATURE_ERREUR)
+    {
+      // On affiche la température si elle à changer depuis le tour de boucle précédent
+      if (derniereTemperature != temperatureObtenue || actualiserAffichage)
+      {
+
+        char temperatureSTR[10];
+        sprintf(temperatureSTR, "%.2f %s", temperatureObtenue, myScreenString->getMessage(unityMessage));
+        derniereTemperature = temperatureObtenue;
+
+        actualiserAffichage = false;
+
+        myOled->clearDisplay();
+        myOled->setTextSize(1);
+        myOled->printIt(POSITION_X_STATION_METEO, POSITION_Y_STATION_METEO, myScreenString->getMessage(METEO_STATION), true);
+        myOled->setTextSize(2);
+        myOled->printIt(POSITION_X_VALUE, POSITION_Y_VALUE, temperatureSTR, true);
+      }
+    }
+    else
+    {
+      myOled->printIt(POSITION_X_DTH_ERREUR, POSITION_Y_DTH_ERREUR, myScreenString->getMessage(DHT22_ERROR), true);
+      myOled->printIt(POSITION_X_READING_ERROR, POSITION_Y_ERROR_DETAIL, myScreenString->getMessage(READING_ERROR), true);
+    }
+  }
+}
+
+/**
+ * lectureBoutons()
+ *
+ * @brief Lit l'état des boutons et effectue les actions associées.
+ */
+void lectureBoutons()
+{
+  /*-----------LECTURE BOUTON BLEU-----------*/
+  //Permet de changer le unité de la température entre Celsius et Fahrenheit.
+  if (boutonBleu->readButton())
+  {
+    if (boutonBleu->readButton())
+    {
+      uniteTempUtilise = (uniteTempUtilise == UNITY_CELSIUS) ? UNITY_FAHRENHEIT : UNITY_CELSIUS;
+      unityMessage = (uniteTempUtilise == UNITY_CELSIUS) ? CELSIUS : FAHRENHEIT;
+      
+      myTemp->setUniteUsed(uniteTempUtilise);
+      actualiserAffichage = true;
+      lectureMyTemp();
+    }
+  }
+
+  /*-----------LECTURE BOUTON VERT-----------*/
+  //Permet de changer l'affichage entre Température et Humidité.
+  if (boutonVert->readButton())
+  {
+    humiditySurEcran = !humiditySurEcran;
+    actualiserAffichage = true;
+    lectureMyTemp();
+  }
+
+  /*-----------LECTURE BOUTON JAUNE-----------*/
+  //Permet de changer la langue d'affichage.
+  if (boutonJaune->readButton())
+  {
+    langueUtilisee = (langueUtilisee == FRENCH) ? ENGLISH : FRENCH;
+
+    myScreenString->setLanguageUsed(langueUtilisee);
+    actualiserAffichage = true;
+    lectureMyTemp();
+  }
+}
+#pragma endregion METHODES
+#pragma region FONCTIONS
+
+/**
+ * Fonction setup()
+ *
+ * @brief Initialise le programme en configurant les éléments nécessaires au démarrage.
+ */
+void setup()
+{
+  Serial.begin(SERIAL_SPEED);
+
+  /*-----------MyScreenString-----------*/
+  myScreenString = new MyScreenString();
+  if (!myScreenString)
+  {
+    while (true)
+      ;
+  }
+  myScreenString->setLanguageUsed(langueUtilisee);
+
+  /*---------------MyOled---------------*/
+  myOled = new MyOled(&Wire, OLED_RESET, SCREEN_HEIGHT, SCREEN_WIDTH);
+  if (!myOled)
+  {
+    while (true)
+      ;
+  }
+  if (myOled->init(2000) == 1)
+  {
+    while (true)
+      ;
+  }
+
+  myOled->clearDisplay();
+  delay(DELAI_MY_OLED);
+
+  /*---------------MyTemp---------------*/
+  myTemp = new MyTemp();
+  if (!myTemp)
+  {
+    myOled->printIt(POSITION_X_TITRE, POSITION_Y_TITRE, myScreenString->getMessage(INSTANTIATION), true);
+    myOled->printIt(POSITION_X_DTH_ERREUR, POSITION_Y_DTH_ERREUR, myScreenString->getMessage(DHT22_ERROR), true);
+    while (true)
+      ;
+  }
+  if (!myTemp->init(DHTPIN, DHTTYPE))
+  {
+    myOled->printIt(POSITION_X_TITRE, POSITION_Y_TITRE, myScreenString->getMessage(INITIALISATION), true);
+    myOled->printIt(POSITION_X_DTH_ERREUR, POSITION_Y_DTH_ERREUR, myScreenString->getMessage(DHT22_ERROR), true);
+    myOled->printIt(POSITION_X_BAD_PIN_USED, POSITION_Y_ERROR_DETAIL, myScreenString->getMessage(PIN_PROBLEM), true);
+    while (true)
+      ;
+  }
+  myTemp->setUniteUsed(uniteTempUtilise);
+
+  /*-----------MyProjectButton----------*/
+  // Bouton bleu - Permet de changer le unité de la température entre Celsius et Fahrenheit.
+  boutonBleu = new MyProjectButton(BROCHE_BOUTON_BLEU);
+  // Bouton vert - Permet de changer l'affichage entre Température et Humidité.
+  boutonVert = new MyProjectButton(BROCHE_BOUTON_VERT);
+  // Bouton jaune - Permets de changer la langue d'affichage.
+  boutonJaune = new MyProjectButton(BROCHE_BOUTON_JAUNE);
+
+  if (!boutonBleu || !boutonVert || !boutonJaune)
+  {
+    myOled->printIt(POSITION_X_TITRE, POSITION_Y_TITRE, myScreenString->getMessage(INSTANTIATION), true);
+    myOled->printIt(POSITION_X_DTH_ERREUR, POSITION_Y_DTH_ERREUR, myScreenString->getMessage(BUTTON_ERROR), true);
+    while (true)
+      ;
+  }
+  if (!boutonBleu->init() || !boutonVert->init() || !boutonJaune->init())
+  {
+    myOled->printIt(POSITION_X_TITRE, POSITION_Y_TITRE, myScreenString->getMessage(INITIALISATION), true);
+    myOled->printIt(POSITION_X_DTH_ERREUR, POSITION_Y_DTH_ERREUR, myScreenString->getMessage(BUTTON_ERROR), true);
+    while (true)
+      ;
+  }
+}
+
+/**
+ * Fonction loop()
+ *
+ * @brief Boucle principale de l'ESP32, interrogeant périodiquement les méthodes nécessaires.
+ */
+void loop()
+{
+  lectureBoutons();
+
+  if (decompteMyTempLoop < 0)
+  {
+    decompteMyTempLoop = DIVIEUR_MYTEMP_LOOP;
+    lectureMyTemp();
+  }
+
+  delay(DELAI_LOOP);
+  --decompteMyTempLoop;
+}
+#pragma endregion FONCTIONS
