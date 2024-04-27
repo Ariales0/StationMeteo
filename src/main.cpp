@@ -12,8 +12,29 @@
  */
 
 #pragma region DEFINITIONS
+
+/*-----------INCLUSIONS-----------*/
+#include <Arduino.h>
+// --- Classes de lib
+#include "MyOled.h"
+#include "MyTemp.h"
+#include "MyScreenString.h"
+#include "MyProjectButton.h"
+
+#include "Enums.cpp"
+#include "ImagesBMP.cpp"
+
+// #define MYTEMP_MOCK
+#ifdef MYTEMP_MOCK
+#define MyTempImplementation MyTempMock
+#include "MyTempMock.h"
+#else
+#define MyTempImplementation MyTemp
+#endif
+
 // Section Serial
 #define SERIAL_SPEED 9600
+#define SERIAL_DELAY 100
 
 // Section de l'écran OLED (Dimensions, broche de réinitialisation, broche des données...)
 #define SCREEN_WIDTH 128 // Largeur de l'écran OLED en pixels
@@ -29,20 +50,9 @@
 #define BROCHE_BOUTON_VERT 27
 #define BROCHE_BOUTON_JAUNE 14
 
-/*-----------INCLUSIONS-----------*/
-#include <Arduino.h>
-// --- Classes de lib
-#include "MyOled.h"
-#include "MyTemp.h"
-#include "MyScreenString.h"
-#include "MyProjectButton.h"
-
-#include "Enums.cpp"
-#include "ImagesBMP.cpp"
-
 /*-----------OBJETS-----------*/
 MyOled *myOled = NULL;
-MyTemp *myTemp = NULL;
+MyTempImplementation *myTemp = NULL;
 MyScreenString *myScreenString = NULL;
 MyProjectButton *boutonBleu = NULL;
 MyProjectButton *boutonVert = NULL;
@@ -131,6 +141,10 @@ void lectureMyTemp()
     }
     else
     {
+      myOled->clearDisplay();
+      myOled->setTextSize(1);
+      myOled->printIt(POSITION_X_STATION_METEO, POSITION_Y_STATION_METEO, myScreenString->getMessage(METEO_STATION), true);
+      myOled->printIt(POSITION_X_TITRE, POSITION_Y_TITRE, myScreenString->getMessage(unityMessage), true);
       myOled->printIt(POSITION_X_DTH_ERREUR, POSITION_Y_DTH_ERREUR, myScreenString->getMessage(DHT22_ERROR), true);
       myOled->printIt(POSITION_X_READING_ERROR, POSITION_Y_ERROR_DETAIL, myScreenString->getMessage(READING_ERROR), true);
     }
@@ -144,7 +158,7 @@ void lectureMyTemp()
       if (derniereTemperature != temperatureObtenue || actualiserAffichage)
       {
 
-        char temperatureSTR[6];
+        char temperatureSTR[7];
         sprintf(temperatureSTR, "%.2f", temperatureObtenue);
         derniereTemperature = temperatureObtenue;
 
@@ -162,6 +176,10 @@ void lectureMyTemp()
     }
     else
     {
+      myOled->clearDisplay();
+      myOled->setTextSize(1);
+      myOled->printIt(POSITION_X_STATION_METEO, POSITION_Y_STATION_METEO, myScreenString->getMessage(METEO_STATION), true);
+      myOled->printIt(POSITION_X_TITRE, POSITION_Y_TITRE, myScreenString->getMessage(unityMessage), true);
       myOled->printIt(POSITION_X_DTH_ERREUR, POSITION_Y_DTH_ERREUR, myScreenString->getMessage(DHT22_ERROR), true);
       myOled->printIt(POSITION_X_READING_ERROR, POSITION_Y_ERROR_DETAIL, myScreenString->getMessage(READING_ERROR), true);
     }
@@ -177,15 +195,15 @@ void lectureBoutons()
 {
   /*-----------LECTURE BOUTON BLEU-----------*/
   // Permet de changer le unité de la température entre Celsius et Fahrenheit.
-    if (boutonBleu->readButton())
-    {
-      uniteTempUtilise = (uniteTempUtilise == UNITY_CELSIUS) ? UNITY_FAHRENHEIT : UNITY_CELSIUS;
-      unityMessage = (uniteTempUtilise == UNITY_CELSIUS) ? CELSIUS : FAHRENHEIT;
+  if (boutonBleu->readButton())
+  {
+    uniteTempUtilise = (uniteTempUtilise == UNITY_CELSIUS) ? UNITY_FAHRENHEIT : UNITY_CELSIUS;
+    unityMessage = (uniteTempUtilise == UNITY_CELSIUS) ? CELSIUS : FAHRENHEIT;
 
-      myTemp->setUniteUsed(uniteTempUtilise);
-      actualiserAffichage = true;
-      lectureMyTemp();
-    }
+    myTemp->setUniteUsed(uniteTempUtilise);
+    actualiserAffichage = true;
+    lectureMyTemp();
+  }
   /*-----------LECTURE BOUTON VERT-----------*/
   // Permet de changer l'affichage entre Température et Humidité.
   if (boutonVert->readButton())
@@ -217,6 +235,7 @@ void lectureBoutons()
 void setup()
 {
   Serial.begin(SERIAL_SPEED);
+  delay(SERIAL_DELAY);
 
   /*-----------MyScreenString-----------*/
   myScreenString = new MyScreenString();
@@ -244,7 +263,7 @@ void setup()
   delay(DELAI_MY_OLED);
 
   /*---------------MyTemp---------------*/
-  myTemp = new MyTemp();
+  myTemp = new MyTempImplementation();
   if (!myTemp)
   {
     myOled->printIt(POSITION_X_TITRE, POSITION_Y_TITRE, myScreenString->getMessage(INSTANTIATION), true);

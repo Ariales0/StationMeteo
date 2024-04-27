@@ -25,7 +25,6 @@ bool MyProjectButton::readButton()
 
     if (buttonState == LOW && !isPressed)
     {
-        Serial.println("Bouton bleu");
         isPressed = true;
         return true;
     }

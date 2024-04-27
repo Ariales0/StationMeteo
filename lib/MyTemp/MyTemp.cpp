@@ -43,7 +43,7 @@ bool MyTemp::init(int _inputPinUsed = DEFAUTLT_PIN, int _typeSensorUsed = DHT22)
 
     lastTemperatureRead = TEMPERATURE_ERREUR;
     lastHumidityRead = HUMIDITE_ERREUR;
-
+    
     dht = new DHT(inputPinUsed, typeSensorUsed);
     if (!dht)
     {
