@@ -1,6 +1,7 @@
 #ifndef MYSCREENSTRING_H
 #define MYSCREENSTRING_H
-#include "Enums.h"
+
+#include "Enums.cpp"
 
 class MyScreenString 
 {

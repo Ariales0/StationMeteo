@@ -1,10 +1,7 @@
 #ifndef MYPROJECTBUTTON_H
 #define MYPROJECTBUTTON_H
 
-#include "MyOled.h"
-#include "MyTemp.h"
-#include "MyScreenString.h"
-#include "Enums.h"
+#include <Arduino.h>
 
 class MyProjectButton
 {

@@ -36,8 +36,9 @@
 #include "MyTemp.h"
 #include "MyScreenString.h"
 #include "MyProjectButton.h"
-// --- Autre(s) fichier(s)
-#include "Enums.h"
+
+#include "Enums.cpp"
+#include "ImagesBMP.cpp"
 
 /*-----------OBJETS-----------*/
 MyOled *myOled = NULL;
@@ -67,7 +68,7 @@ const int POSITION_X_READING_ERROR = 20;
 const int POSITION_Y_ERROR_DETAIL = 55;
 
 const int POSITION_X_VALUE = 18;
-const int POSITION_Y_VALUE = 25;
+const int POSITION_Y_VALUE = 38;
 
 /*-----------VARIABLES-----------*/
 bool humiditySurEcran = false;               // Etat de l'affichage de l'humidité.
@@ -112,8 +113,8 @@ void lectureMyTemp()
     {
       if (humiditeObtenue != derniereHumidite || actualiserAffichage)
       {
-        char humiditySTR[15];
-        sprintf(humiditySTR, "%.2f %s", humiditeObtenue, myScreenString->getMessage(HUMIDITY));
+        char humiditySTR[6];
+        sprintf(humiditySTR, "%.2f", humiditeObtenue);
         derniereHumidite = humiditeObtenue;
 
         actualiserAffichage = false;
@@ -121,8 +122,11 @@ void lectureMyTemp()
         myOled->clearDisplay();
         myOled->setTextSize(1);
         myOled->printIt(POSITION_X_STATION_METEO, POSITION_Y_STATION_METEO, myScreenString->getMessage(METEO_STATION), true);
+        myOled->printIt(POSITION_X_TITRE, POSITION_Y_TITRE, myScreenString->getMessage(HUMIDITY), true);
         myOled->setTextSize(2);
         myOled->printIt(POSITION_X_VALUE, POSITION_Y_VALUE, humiditySTR, true);
+        myOled->drawBitmap(0, 0, goutteEauHumidite, SCREEN_WIDTH, SCREEN_HEIGHT, WHITE);
+        myOled->display();
       }
     }
     else
@@ -140,8 +144,8 @@ void lectureMyTemp()
       if (derniereTemperature != temperatureObtenue || actualiserAffichage)
       {
 
-        char temperatureSTR[10];
-        sprintf(temperatureSTR, "%.2f %s", temperatureObtenue, myScreenString->getMessage(unityMessage));
+        char temperatureSTR[6];
+        sprintf(temperatureSTR, "%.2f", temperatureObtenue);
         derniereTemperature = temperatureObtenue;
 
         actualiserAffichage = false;
@@ -149,8 +153,11 @@ void lectureMyTemp()
         myOled->clearDisplay();
         myOled->setTextSize(1);
         myOled->printIt(POSITION_X_STATION_METEO, POSITION_Y_STATION_METEO, myScreenString->getMessage(METEO_STATION), true);
+        myOled->printIt(POSITION_X_TITRE, POSITION_Y_TITRE, myScreenString->getMessage(unityMessage), true);
         myOled->setTextSize(2);
         myOled->printIt(POSITION_X_VALUE, POSITION_Y_VALUE, temperatureSTR, true);
+        myOled->drawBitmap(0, 0, thermometre, SCREEN_WIDTH, SCREEN_HEIGHT, WHITE);
+        myOled->display();
       }
     }
     else
@@ -169,22 +176,18 @@ void lectureMyTemp()
 void lectureBoutons()
 {
   /*-----------LECTURE BOUTON BLEU-----------*/
-  //Permet de changer le unité de la température entre Celsius et Fahrenheit.
-  if (boutonBleu->readButton())
-  {
+  // Permet de changer le unité de la température entre Celsius et Fahrenheit.
     if (boutonBleu->readButton())
     {
       uniteTempUtilise = (uniteTempUtilise == UNITY_CELSIUS) ? UNITY_FAHRENHEIT : UNITY_CELSIUS;
       unityMessage = (uniteTempUtilise == UNITY_CELSIUS) ? CELSIUS : FAHRENHEIT;
-      
+
       myTemp->setUniteUsed(uniteTempUtilise);
       actualiserAffichage = true;
       lectureMyTemp();
     }
-  }
-
   /*-----------LECTURE BOUTON VERT-----------*/
-  //Permet de changer l'affichage entre Température et Humidité.
+  // Permet de changer l'affichage entre Température et Humidité.
   if (boutonVert->readButton())
   {
     humiditySurEcran = !humiditySurEcran;
@@ -193,7 +196,7 @@ void lectureBoutons()
   }
 
   /*-----------LECTURE BOUTON JAUNE-----------*/
-  //Permet de changer la langue d'affichage.
+  // Permet de changer la langue d'affichage.
   if (boutonJaune->readButton())
   {
     langueUtilisee = (langueUtilisee == FRENCH) ? ENGLISH : FRENCH;

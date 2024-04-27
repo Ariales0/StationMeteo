@@ -1,5 +1,5 @@
-#ifndef ENUMS_H
-#define ENUMS_H
+#ifndef ENUMS_CPP
+#define ENUMS_CPP
 
 // Enumération des langues disponibles
 enum LANGUAGE {

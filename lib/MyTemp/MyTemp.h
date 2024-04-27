@@ -12,7 +12,8 @@
 #define MYTEMP_H
 
 #include <DHT.h>
-#include "Enums.h"
+#include "Enums.cpp"
+
 class MyTemp
 {
 public:

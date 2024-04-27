@@ -21,11 +21,11 @@ MyScreenString::MyScreenString()
     MESSAGES[PIN_PROBLEM][FRENCH] = "Verifiez la broche utilise";
     MESSAGES[PIN_PROBLEM][ENGLISH] = "Maybe Bad Pin USED";
 
-    MESSAGES[CELSIUS][FRENCH] = "cel";
-    MESSAGES[CELSIUS][ENGLISH] = "cel";
+    MESSAGES[CELSIUS][FRENCH] = "Celsius";
+    MESSAGES[CELSIUS][ENGLISH] = "Celsius";
 
-    MESSAGES[FAHRENHEIT][FRENCH] = "far";
-    MESSAGES[FAHRENHEIT][ENGLISH] = "far";
+    MESSAGES[FAHRENHEIT][FRENCH] = "Farhenheit";
+    MESSAGES[FAHRENHEIT][ENGLISH] = "Farhenheit";
 
     MESSAGES[HUMIDITY][FRENCH] = "Humidite";
     MESSAGES[HUMIDITY][ENGLISH] = "Humidity";
