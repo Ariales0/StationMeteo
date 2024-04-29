@@ -3,7 +3,7 @@
 LanguageMessageManager::LanguageMessageManager() 
 {
     
-    currentLanguage=FRENCH;
+    setLanguageUsed(FRENCH);
 
     // Initialisation des messages en français et en anglais pour l'ecran l'affichage
     MESSAGES[METEO_STATION][FRENCH] = "Station Meteo";
@@ -39,19 +39,16 @@ LanguageMessageManager::LanguageMessageManager()
 
 LanguageMessageManager::~LanguageMessageManager() {}
 
-void LanguageMessageManager::setLanguageUsed(LANGUAGE language) 
-{
-    currentLanguage = language;
-}
 
-LANGUAGE LanguageMessageManager::getCurrentLanguage()
-{
-    return currentLanguage;
-}
 
 const char* LanguageMessageManager::getMessage(MESSAGE_KEYS key) 
 {
     return MESSAGES[key][currentLanguage];
+}
+
+void LanguageMessageManager::setLanguageUsed(LANGUAGE language) 
+{
+    currentLanguage = language;
 }
 
 

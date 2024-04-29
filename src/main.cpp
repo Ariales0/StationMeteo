@@ -24,7 +24,7 @@
 #include "Enums.cpp"
 #include "ImagesBMP.cpp"
 
-#define MYTEMP_MOCK
+//#define MYTEMP_MOCK
 #ifdef MYTEMP_MOCK
 #define MyTempImplementation MyTempMock
 #include "MyTempMock.h"
