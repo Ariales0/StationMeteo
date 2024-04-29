@@ -1,13 +1,13 @@
-#ifndef MYSCREENSTRING_H
-#define MYSCREENSTRING_H
+#ifndef LANGUAGEMESSAGEMANAGER_H
+#define LANGUAGEMESSAGEMANAGER_H
 
 #include "Enums.cpp"
 
-class MyScreenString 
+class LanguageMessageManager
 {
 public:
-    MyScreenString();
-    ~MyScreenString();
+    LanguageMessageManager();
+    ~LanguageMessageManager();
     void setLanguageUsed(LANGUAGE language);
     const char* getMessage(MESSAGE_KEYS key);
     LANGUAGE getCurrentLanguage();

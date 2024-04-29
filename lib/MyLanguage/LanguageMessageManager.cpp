@@ -1,6 +1,6 @@
-#include "MyScreenString.h"
+#include "LanguageMessageManager.h"
 
-MyScreenString::MyScreenString() 
+LanguageMessageManager::LanguageMessageManager() 
 {
     
     currentLanguage=FRENCH;
@@ -37,19 +37,19 @@ MyScreenString::MyScreenString()
     MESSAGES[READING_ERROR][ENGLISH] = "Reading error";
 }
 
-MyScreenString::~MyScreenString() {}
+LanguageMessageManager::~LanguageMessageManager() {}
 
-void MyScreenString::setLanguageUsed(LANGUAGE language) 
+void LanguageMessageManager::setLanguageUsed(LANGUAGE language) 
 {
     currentLanguage = language;
 }
 
-LANGUAGE MyScreenString::getCurrentLanguage()
+LANGUAGE LanguageMessageManager::getCurrentLanguage()
 {
     return currentLanguage;
 }
 
-const char* MyScreenString::getMessage(MESSAGE_KEYS key) 
+const char* LanguageMessageManager::getMessage(MESSAGE_KEYS key) 
 {
     return MESSAGES[key][currentLanguage];
 }

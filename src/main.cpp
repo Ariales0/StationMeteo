@@ -18,13 +18,13 @@
 // --- Classes de lib
 #include "MyOled.h"
 #include "MyTemp.h"
-#include "MyScreenString.h"
+#include "LanguageMessageManager.h"
 #include "MyProjectButton.h"
 
 #include "Enums.cpp"
 #include "ImagesBMP.cpp"
 
-// #define MYTEMP_MOCK
+#define MYTEMP_MOCK
 #ifdef MYTEMP_MOCK
 #define MyTempImplementation MyTempMock
 #include "MyTempMock.h"
@@ -53,7 +53,7 @@
 /*-----------OBJETS-----------*/
 MyOled *myOled = NULL;
 MyTempImplementation *myTemp = NULL;
-MyScreenString *myScreenString = NULL;
+LanguageMessageManager *languageMessageManager = NULL;
 MyProjectButton *boutonBleu = NULL;
 MyProjectButton *boutonVert = NULL;
 MyProjectButton *boutonJaune = NULL;
@@ -131,8 +131,8 @@ void lectureMyTemp()
 
         myOled->clearDisplay();
         myOled->setTextSize(1);
-        myOled->printIt(POSITION_X_STATION_METEO, POSITION_Y_STATION_METEO, myScreenString->getMessage(METEO_STATION), true);
-        myOled->printIt(POSITION_X_TITRE, POSITION_Y_TITRE, myScreenString->getMessage(HUMIDITY), true);
+        myOled->printIt(POSITION_X_STATION_METEO, POSITION_Y_STATION_METEO, languageMessageManager->getMessage(METEO_STATION), true);
+        myOled->printIt(POSITION_X_TITRE, POSITION_Y_TITRE, languageMessageManager->getMessage(HUMIDITY), true);
         myOled->setTextSize(2);
         myOled->printIt(POSITION_X_VALUE, POSITION_Y_VALUE, humiditySTR, true);
         myOled->drawBitmap(0, 0, goutteEauHumidite, SCREEN_WIDTH, SCREEN_HEIGHT, WHITE);
@@ -143,10 +143,10 @@ void lectureMyTemp()
     {
       myOled->clearDisplay();
       myOled->setTextSize(1);
-      myOled->printIt(POSITION_X_STATION_METEO, POSITION_Y_STATION_METEO, myScreenString->getMessage(METEO_STATION), true);
-      myOled->printIt(POSITION_X_TITRE, POSITION_Y_TITRE, myScreenString->getMessage(unityMessage), true);
-      myOled->printIt(POSITION_X_DTH_ERREUR, POSITION_Y_DTH_ERREUR, myScreenString->getMessage(DHT22_ERROR), true);
-      myOled->printIt(POSITION_X_READING_ERROR, POSITION_Y_ERROR_DETAIL, myScreenString->getMessage(READING_ERROR), true);
+      myOled->printIt(POSITION_X_STATION_METEO, POSITION_Y_STATION_METEO, languageMessageManager->getMessage(METEO_STATION), true);
+      myOled->printIt(POSITION_X_TITRE, POSITION_Y_TITRE, languageMessageManager->getMessage(unityMessage), true);
+      myOled->printIt(POSITION_X_DTH_ERREUR, POSITION_Y_DTH_ERREUR, languageMessageManager->getMessage(DHT22_ERROR), true);
+      myOled->printIt(POSITION_X_READING_ERROR, POSITION_Y_ERROR_DETAIL, languageMessageManager->getMessage(READING_ERROR), true);
     }
   }
   else
@@ -166,8 +166,8 @@ void lectureMyTemp()
 
         myOled->clearDisplay();
         myOled->setTextSize(1);
-        myOled->printIt(POSITION_X_STATION_METEO, POSITION_Y_STATION_METEO, myScreenString->getMessage(METEO_STATION), true);
-        myOled->printIt(POSITION_X_TITRE, POSITION_Y_TITRE, myScreenString->getMessage(unityMessage), true);
+        myOled->printIt(POSITION_X_STATION_METEO, POSITION_Y_STATION_METEO, languageMessageManager->getMessage(METEO_STATION), true);
+        myOled->printIt(POSITION_X_TITRE, POSITION_Y_TITRE, languageMessageManager->getMessage(unityMessage), true);
         myOled->setTextSize(2);
         myOled->printIt(POSITION_X_VALUE, POSITION_Y_VALUE, temperatureSTR, true);
         myOled->drawBitmap(0, 0, thermometre, SCREEN_WIDTH, SCREEN_HEIGHT, WHITE);
@@ -178,10 +178,10 @@ void lectureMyTemp()
     {
       myOled->clearDisplay();
       myOled->setTextSize(1);
-      myOled->printIt(POSITION_X_STATION_METEO, POSITION_Y_STATION_METEO, myScreenString->getMessage(METEO_STATION), true);
-      myOled->printIt(POSITION_X_TITRE, POSITION_Y_TITRE, myScreenString->getMessage(unityMessage), true);
-      myOled->printIt(POSITION_X_DTH_ERREUR, POSITION_Y_DTH_ERREUR, myScreenString->getMessage(DHT22_ERROR), true);
-      myOled->printIt(POSITION_X_READING_ERROR, POSITION_Y_ERROR_DETAIL, myScreenString->getMessage(READING_ERROR), true);
+      myOled->printIt(POSITION_X_STATION_METEO, POSITION_Y_STATION_METEO, languageMessageManager->getMessage(METEO_STATION), true);
+      myOled->printIt(POSITION_X_TITRE, POSITION_Y_TITRE, languageMessageManager->getMessage(unityMessage), true);
+      myOled->printIt(POSITION_X_DTH_ERREUR, POSITION_Y_DTH_ERREUR, languageMessageManager->getMessage(DHT22_ERROR), true);
+      myOled->printIt(POSITION_X_READING_ERROR, POSITION_Y_ERROR_DETAIL, languageMessageManager->getMessage(READING_ERROR), true);
     }
   }
 }
@@ -219,7 +219,7 @@ void lectureBoutons()
   {
     langueUtilisee = (langueUtilisee == FRENCH) ? ENGLISH : FRENCH;
 
-    myScreenString->setLanguageUsed(langueUtilisee);
+    languageMessageManager->setLanguageUsed(langueUtilisee);
     actualiserAffichage = true;
     lectureMyTemp();
   }
@@ -238,13 +238,13 @@ void setup()
   delay(SERIAL_DELAY);
 
   /*-----------MyScreenString-----------*/
-  myScreenString = new MyScreenString();
-  if (!myScreenString)
+  languageMessageManager = new LanguageMessageManager();
+  if (!languageMessageManager)
   {
     while (true)
       ;
   }
-  myScreenString->setLanguageUsed(langueUtilisee);
+  languageMessageManager->setLanguageUsed(langueUtilisee);
 
   /*---------------MyOled---------------*/
   myOled = new MyOled(&Wire, OLED_RESET, SCREEN_HEIGHT, SCREEN_WIDTH);
@@ -266,16 +266,16 @@ void setup()
   myTemp = new MyTempImplementation();
   if (!myTemp)
   {
-    myOled->printIt(POSITION_X_TITRE, POSITION_Y_TITRE, myScreenString->getMessage(INSTANTIATION), true);
-    myOled->printIt(POSITION_X_DTH_ERREUR, POSITION_Y_DTH_ERREUR, myScreenString->getMessage(DHT22_ERROR), true);
+    myOled->printIt(POSITION_X_TITRE, POSITION_Y_TITRE, languageMessageManager->getMessage(INSTANTIATION), true);
+    myOled->printIt(POSITION_X_DTH_ERREUR, POSITION_Y_DTH_ERREUR, languageMessageManager->getMessage(DHT22_ERROR), true);
     while (true)
       ;
   }
   if (!myTemp->init(DHTPIN, DHTTYPE))
   {
-    myOled->printIt(POSITION_X_TITRE, POSITION_Y_TITRE, myScreenString->getMessage(INITIALISATION), true);
-    myOled->printIt(POSITION_X_DTH_ERREUR, POSITION_Y_DTH_ERREUR, myScreenString->getMessage(DHT22_ERROR), true);
-    myOled->printIt(POSITION_X_BAD_PIN_USED, POSITION_Y_ERROR_DETAIL, myScreenString->getMessage(PIN_PROBLEM), true);
+    myOled->printIt(POSITION_X_TITRE, POSITION_Y_TITRE, languageMessageManager->getMessage(INITIALISATION), true);
+    myOled->printIt(POSITION_X_DTH_ERREUR, POSITION_Y_DTH_ERREUR, languageMessageManager->getMessage(DHT22_ERROR), true);
+    myOled->printIt(POSITION_X_BAD_PIN_USED, POSITION_Y_ERROR_DETAIL, languageMessageManager->getMessage(PIN_PROBLEM), true);
     while (true)
       ;
   }
@@ -291,15 +291,15 @@ void setup()
 
   if (!boutonBleu || !boutonVert || !boutonJaune)
   {
-    myOled->printIt(POSITION_X_TITRE, POSITION_Y_TITRE, myScreenString->getMessage(INSTANTIATION), true);
-    myOled->printIt(POSITION_X_DTH_ERREUR, POSITION_Y_DTH_ERREUR, myScreenString->getMessage(BUTTON_ERROR), true);
+    myOled->printIt(POSITION_X_TITRE, POSITION_Y_TITRE, languageMessageManager->getMessage(INSTANTIATION), true);
+    myOled->printIt(POSITION_X_DTH_ERREUR, POSITION_Y_DTH_ERREUR, languageMessageManager->getMessage(BUTTON_ERROR), true);
     while (true)
       ;
   }
   if (!boutonBleu->init() || !boutonVert->init() || !boutonJaune->init())
   {
-    myOled->printIt(POSITION_X_TITRE, POSITION_Y_TITRE, myScreenString->getMessage(INITIALISATION), true);
-    myOled->printIt(POSITION_X_DTH_ERREUR, POSITION_Y_DTH_ERREUR, myScreenString->getMessage(BUTTON_ERROR), true);
+    myOled->printIt(POSITION_X_TITRE, POSITION_Y_TITRE, languageMessageManager->getMessage(INITIALISATION), true);
+    myOled->printIt(POSITION_X_DTH_ERREUR, POSITION_Y_DTH_ERREUR, languageMessageManager->getMessage(BUTTON_ERROR), true);
     while (true)
       ;
   }
