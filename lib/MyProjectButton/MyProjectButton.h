@@ -10,12 +10,16 @@ public:
     ~MyProjectButton();
     bool init();
     bool readButton();
+    bool setButtonLed(int _pinLed);
 
 private:
 
     int buttonPinUsed;
     int buttonState;
     bool isPressed;
+
+    int ledPinUsed;
+    static const int DEFAUTLT_NO_PIN_LED;
 };
 
 #endif

@@ -1,7 +1,10 @@
 #include "MyTempMock.h"
-
-MyTempMock ::MyTempMock()
+MyTempMock ::MyTempMock() : MAX_VALUE_POT(4095), INFERIOR_TEMPERATURE(-80), SUPERIOR_TEMPERATURE(40), INFERIOR_HUMIDITY(0), SUPERIOR_HUMIDITY(100)
 {
+  inferiorTemperature = INFERIOR_TEMPERATURE;
+  supperiorTemperature = SUPERIOR_TEMPERATURE;
+  inferiorHumidity = INFERIOR_HUMIDITY;
+  supperiorHumidity = SUPERIOR_HUMIDITY;
   setUniteUsed(UNITY_FAHRENHEIT);
 }
 

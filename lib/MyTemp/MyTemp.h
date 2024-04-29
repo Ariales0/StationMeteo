@@ -31,7 +31,6 @@ protected:
 private:
 
     static const int DEFAUTLT_PIN;
-
     static const float TEMPERATURE_ERREUR;
     static const float HUMIDITE_ERREUR;
 

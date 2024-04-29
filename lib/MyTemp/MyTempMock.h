@@ -6,13 +6,6 @@
 #include "MyTemp.h"
 class MyTempMock : public MyTemp
 {
-private:
-    const float MAX_VALUE_POT = 4095;
-    const int INFERIOR_TEMPERATURE = -80;
-    const int SUPERIOR_TEMPERATURE = 40;
-    const int INFERIOR_HUMIDITY = 0;
-    const int SUPERIOR_HUMIDITY = 100;
-
 public:
     MyTempMock();
     ~MyTempMock(){};
@@ -21,9 +14,15 @@ public:
     float getHumidity();
 
 private:
-    float inferiorTemperature = INFERIOR_TEMPERATURE;
-    float supperiorTemperature = SUPERIOR_TEMPERATURE;
-    float inferiorHumidity = INFERIOR_HUMIDITY;
-    float supperiorHumidity = SUPERIOR_HUMIDITY;
+    const float MAX_VALUE_POT;
+    const int INFERIOR_TEMPERATURE;
+    const int SUPERIOR_TEMPERATURE;
+    const int INFERIOR_HUMIDITY;
+    const int SUPERIOR_HUMIDITY;
+
+    float inferiorTemperature;
+    float supperiorTemperature;
+    float inferiorHumidity;
+    float supperiorHumidity;
 };
 #endif

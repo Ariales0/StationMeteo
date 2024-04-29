@@ -237,6 +237,10 @@ void setup()
   Serial.begin(SERIAL_SPEED);
   delay(SERIAL_DELAY);
 
+  pinMode(16,OUTPUT);
+  pinMode(16,OUTPUT);
+  pinMode(16,OUTPUT);
+
   /*-----------MyScreenString-----------*/
   languageMessageManager = new LanguageMessageManager();
   if (!languageMessageManager)

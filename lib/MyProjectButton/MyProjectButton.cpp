@@ -1,8 +1,11 @@
 #include "MyProjectButton.h"
 
+const int MyProjectButton::DEFAUTLT_NO_PIN_LED = NULL;
+
 MyProjectButton::MyProjectButton(int _buttonPinUsed)
 {
     buttonPinUsed = _buttonPinUsed;
+    ledPinUsed = DEFAUTLT_NO_PIN_LED;
 }
 
 MyProjectButton::~MyProjectButton()
@@ -11,8 +14,6 @@ MyProjectButton::~MyProjectButton()
 
 bool MyProjectButton::init()
 {
-    buttonState = 0;
-    isPressed = false;
     // Configuration du pin en entrée pullup
     pinMode(buttonPinUsed, INPUT_PULLUP);
 
@@ -22,17 +23,29 @@ bool MyProjectButton::init()
 bool MyProjectButton::readButton()
 {
     buttonState = digitalRead(buttonPinUsed);
-
     if (buttonState == LOW && !isPressed)
     {
+        if(ledPinUsed)
+        {
+            digitalWrite(ledPinUsed, HIGH);
+        }
         isPressed = true;
         return true;
     }
     else if (buttonState == HIGH)
     {
         isPressed = false;
+        if(ledPinUsed)
+        {
+            digitalWrite(ledPinUsed, LOW);
+        }
     }
     return false;
 }
 
+bool MyProjectButton::setButtonLed(int pinLedToUsed)
+{
+        ledPinUsed = pinLedToUsed;
+        pinMode(pinLedToUsed, OUTPUT);
+}
  
