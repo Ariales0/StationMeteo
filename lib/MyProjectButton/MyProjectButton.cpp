@@ -14,7 +14,8 @@ const int MyProjectButton::DEFAUTLT_NO_PIN_LED = -1;
 
 /**
  * Constructeur de la classe
- * La classe est crée avec le numero de brooche du bouton
+ * 
+ * @param int _buttonPinUsed le numero de broche du bouton
  * 
  */
 MyProjectButton::MyProjectButton(int _buttonPinUsed)
@@ -85,6 +86,7 @@ bool MyProjectButton::readButton()
  * Configuration de la pin
  * 
  * @date Creation : 29/04/2024
+ * @param int pinLedToUsed Le numero de la broche de la led pour un bouton
  * 
  * @return true
  */

@@ -4,9 +4,9 @@
  * @file MyTemp.cpp
  * @author Lecourt Quentin
  * @brief Methode de la classe MyTemp
- * @version 1.2
+ * @version 1.2.2
  * @date Création : 02/03/24
- * @date Dernière mise à jour : 27/04/2024
+ * @date Dernière mise à jour : 29/04/2024
  */
 #include "MyTemp.h"
 
@@ -29,6 +29,9 @@ MyTemp::MyTemp()
  * init Initialise la classe MyTemp.
  * Initialise les attributs inputPinUsed, typeSensorUsed, lastTemeratureRead, lastHumidityRead.
  * Alloue dynamiquement l'objet DHT et gestion des erreurs.
+ * 
+ * @date Dernière mise à jour : 29/04/2024
+ * @brief Initialisation des dernieres valeurs par les valeurs d'erreur
  * 
  *
  * @param int _inputPinUsed Pin alloué aux données du capteur, valeur par défaut = DEFAUTLT_PIN

@@ -1,3 +1,13 @@
+/**
+ * Classe Mock de simulation d'un capteur de temperature
+ * Classe herite de MyTemp
+ * @file MyTempMock.h
+ * @author Lecourt Quentin
+ * @brief Declaration de la classe MyTempMock
+ * @version 1.1.2
+ * @date Création : 26/04/2024
+ * @date Dernière mise à jour : 29/04/2024
+ */
 #ifndef MYTEMP_MOCK_H
 #define MYTEMP_MOCK_H
 
@@ -20,9 +30,9 @@ private:
     const int INFERIOR_HUMIDITY;
     const int SUPERIOR_HUMIDITY;
 
-    float inferiorTemperature;
-    float supperiorTemperature;
-    float inferiorHumidity;
-    float supperiorHumidity;
+    float inferiorTemperature; //En celsius
+    float supperiorTemperature; //En celsius
+    float inferiorHumidity; //En pourcent
+    float supperiorHumidity; //En pourcent
 };
 #endif

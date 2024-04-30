@@ -4,9 +4,9 @@
  * @file MyTemp.h
  * @author Lecourt Quentin
  * @brief Declaration de la classe MyTemp
- * @version 1.1
+ * @version 1.2.3
  * @date Création : 02/03/2024
- * @date Dernière mise à jour : 27/04/2024
+ * @date Dernière mise à jour : 29/04/2024
  */
 #ifndef MYTEMP_H
 #define MYTEMP_H
