@@ -184,7 +184,6 @@ void lectureMyTemp()
       myOled->clearDisplay();
       myOled->setTextSize(1);
       myOled->printIt(POSITION_X_STATION_METEO, POSITION_Y_STATION_METEO, languageMessageManager->getMessage(METEO_STATION), true);
-      myOled->printIt(POSITION_X_TITRE, POSITION_Y_TITRE, languageMessageManager->getMessage(unityMessage), true);
       myOled->printIt(POSITION_X_DTH_ERREUR, POSITION_Y_DTH_ERREUR, languageMessageManager->getMessage(DHT22_ERROR), true);
       myOled->printIt(POSITION_X_READING_ERROR, POSITION_Y_ERROR_DETAIL, languageMessageManager->getMessage(READING_ERROR), true);
     }
@@ -266,6 +265,8 @@ void setup()
 
   myOled->clearDisplay();
   delay(DELAI_MY_OLED);
+  myOled->printIt(POSITION_X_STATION_METEO, POSITION_Y_STATION_METEO, languageMessageManager->getMessage(METEO_STATION), true);
+  myOled->printIt(POSITION_X_TITRE, POSITION_Y_TITRE, languageMessageManager->getMessage(unityMessage), true);
 
   /*---------------MyTemp---------------*/
   myTemp = new MyTempImplementation();
@@ -308,6 +309,7 @@ void setup()
     while (true)
       ;
   }
+  //Faire le lien entre une led et son bouton
   boutonBleu->setButtonLed(BROCHE_LED_BLEU);
   boutonVert->setButtonLed(BROCHE_LED_VERT);
   boutonJaune->setButtonLed(BROCHE_LED_JAUNE);
