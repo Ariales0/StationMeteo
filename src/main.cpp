@@ -140,7 +140,7 @@ void lectureMyTemp()
         myOled->printIt(POSITION_X_TITRE, POSITION_Y_TITRE, languageMessageManager->getMessage(HUMIDITY), true);
         myOled->setTextSize(2);
         myOled->printIt(POSITION_X_VALUE, POSITION_Y_VALUE, humiditySTR, true);
-        myOled->drawBitmap(0, 0, goutteEauHumidite, SCREEN_WIDTH, SCREEN_HEIGHT, WHITE);
+        myOled->drawBitmap(0, 0, goutteEauHumiditeBMP_IMAGE, SCREEN_WIDTH, SCREEN_HEIGHT, WHITE);
         myOled->display();
       }
     }
@@ -175,7 +175,7 @@ void lectureMyTemp()
         myOled->printIt(POSITION_X_TITRE, POSITION_Y_TITRE, languageMessageManager->getMessage(unityMessage), true);
         myOled->setTextSize(2);
         myOled->printIt(POSITION_X_VALUE, POSITION_Y_VALUE, temperatureSTR, true);
-        myOled->drawBitmap(0, 0, thermometre, SCREEN_WIDTH, SCREEN_HEIGHT, WHITE);
+        myOled->drawBitmap(0, 0, thermometreBMP_IMAGE, SCREEN_WIDTH, SCREEN_HEIGHT, WHITE);
         myOled->display();
       }
     }
