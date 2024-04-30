@@ -16,8 +16,8 @@ LanguageMessageManager::LanguageMessageManager()
     setLanguageUsed(FRENCH);
 
     // Initialisation des messages en français et en anglais pour l'ecran l'affichage
-    MESSAGES[METEO_STATION][FRENCH] = "Station Meteo";
-    MESSAGES[METEO_STATION][ENGLISH] = "Meteo Station";
+    MESSAGES[METEO_STATION][FRENCH] = "Station Méteo";
+    MESSAGES[METEO_STATION][ENGLISH] = "Weather Channel";
 
     MESSAGES[DHT22_ERROR][FRENCH] = "DHT22:ERREUR";
     MESSAGES[DHT22_ERROR][ENGLISH] = "DHT22:ERROR";
@@ -28,7 +28,7 @@ LanguageMessageManager::LanguageMessageManager()
     MESSAGES[INITIALISATION][FRENCH] = "Initialisation";
     MESSAGES[INITIALISATION][ENGLISH] = "Initialisation";
 
-    MESSAGES[PIN_PROBLEM][FRENCH] = "Verifiez la broche utilise";
+    MESSAGES[PIN_PROBLEM][FRENCH] = "Verifiez la broche";
     MESSAGES[PIN_PROBLEM][ENGLISH] = "Maybe Bad Pin USED";
 
     MESSAGES[CELSIUS][FRENCH] = "Celsius";

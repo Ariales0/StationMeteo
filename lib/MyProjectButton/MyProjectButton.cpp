@@ -61,7 +61,7 @@ bool MyProjectButton::readButton()
     buttonState = digitalRead(buttonPinUsed);
     if (buttonState == LOW && !isPressed)
     {
-        if(ledPinUsed != -1)
+        if(ledPinUsed != DEFAUTLT_NO_PIN_LED)
         {
             digitalWrite(ledPinUsed, HIGH);
         }
@@ -71,7 +71,7 @@ bool MyProjectButton::readButton()
     else if (buttonState == HIGH)
     {
         isPressed = false;
-        if(ledPinUsed != -1)
+        if(ledPinUsed != DEFAUTLT_NO_PIN_LED)
         {
             digitalWrite(ledPinUsed, LOW);
         }
@@ -94,6 +94,7 @@ bool MyProjectButton::setButtonLed(int pinLedToUsed)
 {
         ledPinUsed = pinLedToUsed;
         pinMode(pinLedToUsed, OUTPUT);
+        digitalWrite(ledPinUsed, HIGH);
         return true; 
 }
  

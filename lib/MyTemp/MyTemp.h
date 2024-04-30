@@ -24,8 +24,6 @@ public:
     float getHumidity();
 
 protected:
-    static const int DEFAUTLT_PIN;
-    DHT *dht;
     int inputPinUsed;
     int UniteUsed;
 
@@ -34,6 +32,8 @@ protected:
 private:
     static const float TEMPERATURE_ERREUR;
     static const float HUMIDITE_ERREUR;
+    static const int DEFAUTLT_PIN;
+    DHT *dht;
     float lastTemperatureRead;
     float lastHumidityRead;
 };

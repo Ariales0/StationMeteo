@@ -24,7 +24,7 @@
 #include "Enums.cpp"
 #include "ImagesBMP.cpp"
 
-//#define MYTEMP_MOCK
+// #define MYTEMP_MOCK
 #ifdef MYTEMP_MOCK
 #define MyTempImplementation MyTempMock
 #include "MyTempMock.h"
@@ -75,12 +75,12 @@ const int POSITION_Y_STATION_METEO = 2;
 const int POSITION_X_TITRE = 23;
 const int POSITION_Y_TITRE = 20;
 
-const int POSITION_X_DTH_ERREUR = 32;
-const int POSITION_Y_DTH_ERREUR = 40;
+const int POSITION_X_DTH_ERREUR = 28;
+const int POSITION_Y_DTH_ERREUR = 35;
 
 const int POSITION_X_BAD_PIN_USED = 10;
 const int POSITION_X_READING_ERROR = 20;
-const int POSITION_Y_ERROR_DETAIL = 55;
+const int POSITION_Y_ERROR_DETAIL = 50;
 
 const int POSITION_X_VALUE = 18;
 const int POSITION_Y_VALUE = 38;
@@ -93,24 +93,66 @@ MESSAGE_KEYS unityMessage = CELSIUS;         // Unité de la température affich
 // Variables des dernières données obtenu
 float derniereTemperature = 0;
 float derniereHumidite = 0;
-float temperatureObtenue = 0;
-float humiditeObtenue = 0;
 
 // Sert à actualiser l'affichage lors de l'appui d'un bouton
 bool actualiserAffichage = false;
 
 /*-----------DÉLAIS ET DIVISEURS-----------*/
 //  Les délais sont en millisecondes
-const int DELAI_MY_OLED = 100;  // Délai accordé à l'objet myOled pour réagir.
-const int DELAI_MY_TEMP = 2000; // Le DHT22 a un temps de rafraîchissement de 2 secondes.
-const int DELAI_LOOP = 10;      // Loop toutes les 10 ms réagir rapidement à la pression des boutons.
+const int DELAI_MY_OLED = 100;             // Délai accordé à l'objet myOled pour réagir.
+const int DELAI_MY_TEMP = 2000;            // Le DHT22 a un temps de rafraîchissement de 2 secondes.
+const int DELAI_LOOP = 10;                 // Loop toutes les 10 ms réagir rapidement à la pression des boutons.
+const int DISPLAY_SPLASH_TIME = 1000;      // Temps en millisecondes pour l'initialisation de MyOled
+const int DELAY_LED_INITIALISATION = 1000; // Temps pour lequel les leds reste allumees en millisecondes
 
 // On appelle les méthodes de MyTemp (DELAI_MY_TEMP / DELAI_LOOP) fois par loop. Ainsi, on peut lire rapidement les boutons et lire les données du DTH22 toutes les 2s.
 const int DIVIEUR_MYTEMP_LOOP = DELAI_MY_TEMP / DELAI_LOOP;
-int decompteMyTempLoop = DIVIEUR_MYTEMP_LOOP;
+int decompteMyTempLoop = -1; // Permet de lire la temperature a la premiere boucle
 
 #pragma endregion DEFINITIONS
 #pragma region METHODES
+
+void rechargeEcran()
+{
+  myOled->clearDisplay();
+  myOled->setTextSize(1);
+  myOled->printIt(POSITION_X_STATION_METEO, POSITION_Y_STATION_METEO, languageMessageManager->getMessage(METEO_STATION), true);
+}
+
+void afficherValeur(float valeur)
+{
+  const char *MESSAGE;
+  const unsigned char *IMAGE;
+  char valeurSTR[7];
+
+  sprintf(valeurSTR, "%.2f", valeur);
+  if (humiditySurEcran)
+  {
+    MESSAGE = languageMessageManager->getMessage(HUMIDITY);
+    IMAGE = goutteEauHumiditeBMP_IMAGE;
+  }
+  else
+  {
+    MESSAGE = languageMessageManager->getMessage(unityMessage);
+    IMAGE = thermometreBMP_IMAGE;
+  }
+
+  rechargeEcran();
+  myOled->printIt(POSITION_X_TITRE, POSITION_Y_TITRE, MESSAGE, true);
+  myOled->setTextSize(2);
+  myOled->printIt(POSITION_X_VALUE, POSITION_Y_VALUE, valeurSTR, true);
+  // Affichage image
+  myOled->drawBitmap(0, 0, IMAGE, SCREEN_WIDTH, SCREEN_HEIGHT, WHITE);
+  myOled->display();
+  actualiserAffichage = false;
+}
+
+void erreurLectureValeur()
+{
+  rechargeEcran();
+  myOled->printIt(POSITION_X_DTH_ERREUR, POSITION_Y_DTH_ERREUR, languageMessageManager->getMessage(DHT22_ERROR), true);
+  myOled->printIt(POSITION_X_READING_ERROR, POSITION_Y_ERROR_DETAIL, languageMessageManager->getMessage(READING_ERROR), true);
+}
 
 /**
  * lectureMyTemp()
@@ -121,74 +163,23 @@ int decompteMyTempLoop = DIVIEUR_MYTEMP_LOOP;
  */
 void lectureMyTemp()
 {
-  if (humiditySurEcran)
+
+  float temperatureObtenue = 0;
+  float humiditeObtenue = 0;
+  float valeurObtenue = (humiditySurEcran) ? humiditeObtenue = myTemp->getHumidity() : temperatureObtenue = myTemp->getTemperature();
+  if ((valeurObtenue != HUMIDITE_ERREUR) && (valeurObtenue != TEMPERATURE_ERREUR))
   {
-    humiditeObtenue = myTemp->getHumidity();
-    if (humiditeObtenue != HUMIDITE_ERREUR)
+    if (humiditeObtenue != derniereHumidite || temperatureObtenue != derniereTemperature || actualiserAffichage)
     {
-      if (humiditeObtenue != derniereHumidite || actualiserAffichage)
-      {
-        char humiditySTR[6];
-        sprintf(humiditySTR, "%.2f", humiditeObtenue);
-        derniereHumidite = humiditeObtenue;
-
-        actualiserAffichage = false;
-
-        myOled->clearDisplay();
-        myOled->setTextSize(1);
-        myOled->printIt(POSITION_X_STATION_METEO, POSITION_Y_STATION_METEO, languageMessageManager->getMessage(METEO_STATION), true);
-        myOled->printIt(POSITION_X_TITRE, POSITION_Y_TITRE, languageMessageManager->getMessage(HUMIDITY), true);
-        myOled->setTextSize(2);
-        myOled->printIt(POSITION_X_VALUE, POSITION_Y_VALUE, humiditySTR, true);
-        myOled->drawBitmap(0, 0, goutteEauHumiditeBMP_IMAGE, SCREEN_WIDTH, SCREEN_HEIGHT, WHITE);
-        myOled->display();
-      }
-    }
-    else
-    {
-      myOled->clearDisplay();
-      myOled->setTextSize(1);
-      myOled->printIt(POSITION_X_STATION_METEO, POSITION_Y_STATION_METEO, languageMessageManager->getMessage(METEO_STATION), true);
-      myOled->printIt(POSITION_X_TITRE, POSITION_Y_TITRE, languageMessageManager->getMessage(unityMessage), true);
-      myOled->printIt(POSITION_X_DTH_ERREUR, POSITION_Y_DTH_ERREUR, languageMessageManager->getMessage(DHT22_ERROR), true);
-      myOled->printIt(POSITION_X_READING_ERROR, POSITION_Y_ERROR_DETAIL, languageMessageManager->getMessage(READING_ERROR), true);
+      afficherValeur(valeurObtenue);
     }
   }
   else
   {
-    temperatureObtenue = myTemp->getTemperature();
-    if (temperatureObtenue != TEMPERATURE_ERREUR)
-    {
-      // On affiche la température si elle à changer depuis le tour de boucle précédent
-      if (derniereTemperature != temperatureObtenue || actualiserAffichage)
-      {
-
-        char temperatureSTR[7];
-        sprintf(temperatureSTR, "%.2f", temperatureObtenue);
-        derniereTemperature = temperatureObtenue;
-
-        actualiserAffichage = false;
-
-        myOled->clearDisplay();
-        myOled->setTextSize(1);
-        myOled->printIt(POSITION_X_STATION_METEO, POSITION_Y_STATION_METEO, languageMessageManager->getMessage(METEO_STATION), true);
-        myOled->printIt(POSITION_X_TITRE, POSITION_Y_TITRE, languageMessageManager->getMessage(unityMessage), true);
-        myOled->setTextSize(2);
-        myOled->printIt(POSITION_X_VALUE, POSITION_Y_VALUE, temperatureSTR, true);
-        myOled->drawBitmap(0, 0, thermometreBMP_IMAGE, SCREEN_WIDTH, SCREEN_HEIGHT, WHITE);
-        myOled->display();
-      }
-    }
-    else
-    {
-      myOled->clearDisplay();
-      myOled->setTextSize(1);
-      myOled->printIt(POSITION_X_STATION_METEO, POSITION_Y_STATION_METEO, languageMessageManager->getMessage(METEO_STATION), true);
-      myOled->printIt(POSITION_X_DTH_ERREUR, POSITION_Y_DTH_ERREUR, languageMessageManager->getMessage(DHT22_ERROR), true);
-      myOled->printIt(POSITION_X_READING_ERROR, POSITION_Y_ERROR_DETAIL, languageMessageManager->getMessage(READING_ERROR), true);
-    }
+    erreurLectureValeur();
   }
 }
+
 
 /**
  * lectureBoutons()
@@ -243,47 +234,34 @@ void setup()
 
   /*-----------MyScreenString-----------*/
   languageMessageManager = new LanguageMessageManager();
-  if (!languageMessageManager)
-  {
-    while (true)
-      ;
-  }
+  while (!languageMessageManager)
+    ;
+
   languageMessageManager->setLanguageUsed(langueUtilisee);
 
   /*---------------MyOled---------------*/
   myOled = new MyOled(&Wire, OLED_RESET, SCREEN_HEIGHT, SCREEN_WIDTH);
-  if (!myOled)
-  {
-    while (true)
-      ;
-  }
-  if (myOled->init(2000) == 1)
-  {
-    while (true)
-      ;
-  }
+  while (!myOled)
+    ;
 
-  myOled->clearDisplay();
+  while (myOled->init(DISPLAY_SPLASH_TIME) == 1)
+    ;
+
   delay(DELAI_MY_OLED);
-  myOled->printIt(POSITION_X_STATION_METEO, POSITION_Y_STATION_METEO, languageMessageManager->getMessage(METEO_STATION), true);
-  myOled->printIt(POSITION_X_TITRE, POSITION_Y_TITRE, languageMessageManager->getMessage(unityMessage), true);
+  rechargeEcran();
 
   /*---------------MyTemp---------------*/
   myTemp = new MyTempImplementation();
-  if (!myTemp)
+  while (!myTemp)
   {
     myOled->printIt(POSITION_X_TITRE, POSITION_Y_TITRE, languageMessageManager->getMessage(INSTANTIATION), true);
     myOled->printIt(POSITION_X_DTH_ERREUR, POSITION_Y_DTH_ERREUR, languageMessageManager->getMessage(DHT22_ERROR), true);
-    while (true)
-      ;
   }
-  if (!myTemp->init(DHTPIN, DHTTYPE))
+  while (!myTemp->init(DHTPIN, DHTTYPE))
   {
     myOled->printIt(POSITION_X_TITRE, POSITION_Y_TITRE, languageMessageManager->getMessage(INITIALISATION), true);
     myOled->printIt(POSITION_X_DTH_ERREUR, POSITION_Y_DTH_ERREUR, languageMessageManager->getMessage(DHT22_ERROR), true);
     myOled->printIt(POSITION_X_BAD_PIN_USED, POSITION_Y_ERROR_DETAIL, languageMessageManager->getMessage(PIN_PROBLEM), true);
-    while (true)
-      ;
   }
   myTemp->setUniteUsed(uniteTempUtilise);
 
@@ -295,24 +273,21 @@ void setup()
   // Bouton jaune - Permets de changer la langue d'affichage.
   boutonJaune = new MyProjectButton(BROCHE_BOUTON_JAUNE);
 
-  if (!boutonBleu || !boutonVert || !boutonJaune)
+  while (!boutonBleu || !boutonVert || !boutonJaune)
   {
     myOled->printIt(POSITION_X_TITRE, POSITION_Y_TITRE, languageMessageManager->getMessage(INSTANTIATION), true);
     myOled->printIt(POSITION_X_DTH_ERREUR, POSITION_Y_DTH_ERREUR, languageMessageManager->getMessage(BUTTON_ERROR), true);
-    while (true)
-      ;
   }
-  if (!boutonBleu->init() || !boutonVert->init() || !boutonJaune->init())
+  while (!boutonBleu->init() || !boutonVert->init() || !boutonJaune->init())
   {
     myOled->printIt(POSITION_X_TITRE, POSITION_Y_TITRE, languageMessageManager->getMessage(INITIALISATION), true);
     myOled->printIt(POSITION_X_DTH_ERREUR, POSITION_Y_DTH_ERREUR, languageMessageManager->getMessage(BUTTON_ERROR), true);
-    while (true)
-      ;
   }
-  //Faire le lien entre une led et son bouton
+  // Faire le lien entre une led et son bouton
   boutonBleu->setButtonLed(BROCHE_LED_BLEU);
   boutonVert->setButtonLed(BROCHE_LED_VERT);
   boutonJaune->setButtonLed(BROCHE_LED_JAUNE);
+  delay(DELAY_LED_INITIALISATION);
 }
 
 /**

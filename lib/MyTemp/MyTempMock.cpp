@@ -26,45 +26,46 @@ MyTempMock ::MyTempMock() : MAX_VALUE_POT(4095), INFERIOR_TEMPERATURE(-40), SUPE
 /**
  * Initialisation init
  * Inialise les attribut protege de la classe MyTemp
- * 
- * @date Creation : 29/04/2024
- * @param int _inputPinUsed numero du faux capteur (potentiometre), la valeur par defaut DEFAUTLT_PIN de MyTemp
+ *
+ * @param int _inputPinUsed numero du faux capteur (potentiometre)
  * @param int _typeSensorUsed Type de capteur
- * 
+ *
  * @return true
  */
-bool MyTempMock::init(int _inputPinUsed = MyTemp::DEFAUTLT_PIN, int _typeSensorUsed = DHT22)
+bool MyTempMock ::init(int _inputPinUsed, int _typeSensorUsed)
 {
+  bool reussi = false;
 
-    inputPinUsed = _inputPinUsed;
-    typeSensorUsed = _typeSensorUsed;
-    
-    dht = new DHT(inputPinUsed, typeSensorUsed);
-    if (!dht)
+  const int ADC_GPIO_PIN[] = {0, 2, 4, 12, 13, 14, 15, 25, 26, 27, 32, 33, 34, 35, 36, 37, 38, 39};
+  for (int i = 0; i < sizeof(ADC_GPIO_PIN) / sizeof(ADC_GPIO_PIN[0]); ++i)
+  {
+    if (ADC_GPIO_PIN[i] == _inputPinUsed)
     {
-        return false;
+      MyTemp::init(_inputPinUsed, _typeSensorUsed);
+      reussi = true;
+      break;
     }
-    dht->begin();
-    return true;
-}
+  }
+  return (reussi);
+};
 
 /**
  * Methode getTemperature()
  * Retourne la temperature simulée en fonction de l'impedance de potentiometre
- * 
+ *
  * @date Mise a jour : 29/04/2024
  * @brief La temperature est convertie en unite fahrenheit si c'est la temperature utilise
- * 
+ *
  * @return La temperature simulée
  */
 float MyTempMock::getTemperature()
 {
   float temperature = inferiorTemperature + (((float)analogRead(inputPinUsed)) / MAX_VALUE_POT) * (supperiorTemperature - inferiorTemperature);
-  
-  if(UniteUsed == UNITY_FAHRENHEIT)
+
+  if (UniteUsed == UNITY_FAHRENHEIT)
   {
-    //Convertion Celsius - > Fahrenheit
-    temperature = (temperature * 1.8) +32;
+    // Convertion Celsius - > Fahrenheit
+    temperature = (temperature * 1.8) + 32;
   }
   return (temperature);
 };
@@ -72,7 +73,7 @@ float MyTempMock::getTemperature()
 /**
  * Methode getHumidity()
  * Retourne l'humidite simulée en fonction de l'impedance de potentiometre
- * 
+ *
  * @return L'humidite simulée
  */
 float MyTempMock::getHumidity()
