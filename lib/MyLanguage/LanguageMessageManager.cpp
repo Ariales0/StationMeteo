@@ -1,3 +1,13 @@
+/**
+ * Gestion des langues et leures messages
+ *
+ * @file LanguageMessageManager.cpp
+ * @author Lecourt Quentin
+ * @brief Methode de la classe LanguageMessageManager
+ * @version 1.2
+ * @date Création : 23/04/24
+ * @date Dernière mise à jour : 27/04/2024
+ */
 #include "LanguageMessageManager.h"
 
 LanguageMessageManager::LanguageMessageManager() 
