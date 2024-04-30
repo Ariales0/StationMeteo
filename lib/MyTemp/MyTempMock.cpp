@@ -1,5 +1,6 @@
 #include "MyTempMock.h"
-MyTempMock ::MyTempMock() : MAX_VALUE_POT(4095), INFERIOR_TEMPERATURE(-80), SUPERIOR_TEMPERATURE(40), INFERIOR_HUMIDITY(0), SUPERIOR_HUMIDITY(100)
+
+MyTempMock ::MyTempMock() : MAX_VALUE_POT(4095), INFERIOR_TEMPERATURE(-40), SUPERIOR_TEMPERATURE(80), INFERIOR_HUMIDITY(0), SUPERIOR_HUMIDITY(100)
 {
   inferiorTemperature = INFERIOR_TEMPERATURE;
   supperiorTemperature = SUPERIOR_TEMPERATURE;
@@ -8,10 +9,29 @@ MyTempMock ::MyTempMock() : MAX_VALUE_POT(4095), INFERIOR_TEMPERATURE(-80), SUPE
   setUniteUsed(UNITY_FAHRENHEIT);
 }
 
-float MyTempMock::getTemperature()
+bool MyTempMock::init(int _inputPinUsed = MyTemp::DEFAUTLT_PIN, int _typeSensorUsed = DHT22)
 {
 
+    inputPinUsed = _inputPinUsed;
+    typeSensorUsed = _typeSensorUsed;
+    
+    dht = new DHT(inputPinUsed, typeSensorUsed);
+    if (!dht)
+    {
+        return false;
+    }
+    dht->begin();
+    return true;
+}
+
+float MyTempMock::getTemperature()
+{
   float temperature = inferiorTemperature + (((float)analogRead(inputPinUsed)) / MAX_VALUE_POT) * (supperiorTemperature - inferiorTemperature);
+  
+  if(UniteUsed == UNITY_FAHRENHEIT)
+  {
+    temperature = (temperature * 1.8) +32;
+  }
   return (temperature);
 };
 

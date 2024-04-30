@@ -50,6 +50,11 @@
 #define BROCHE_BOUTON_VERT 27
 #define BROCHE_BOUTON_JAUNE 14
 
+// Broches des leds utilisées
+#define BROCHE_LED_BLEU 18
+#define BROCHE_LED_VERT 17
+#define BROCHE_LED_JAUNE 16
+
 /*-----------OBJETS-----------*/
 MyOled *myOled = NULL;
 MyTempImplementation *myTemp = NULL;
@@ -237,10 +242,6 @@ void setup()
   Serial.begin(SERIAL_SPEED);
   delay(SERIAL_DELAY);
 
-  pinMode(16,OUTPUT);
-  pinMode(16,OUTPUT);
-  pinMode(16,OUTPUT);
-
   /*-----------MyScreenString-----------*/
   languageMessageManager = new LanguageMessageManager();
   if (!languageMessageManager)
@@ -307,6 +308,9 @@ void setup()
     while (true)
       ;
   }
+  boutonBleu->setButtonLed(BROCHE_LED_BLEU);
+  boutonVert->setButtonLed(BROCHE_LED_VERT);
+  boutonJaune->setButtonLed(BROCHE_LED_JAUNE);
 }
 
 /**

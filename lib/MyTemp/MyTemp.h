@@ -17,7 +17,6 @@
 class MyTemp
 {
 public:
-
     MyTemp();
     bool init(int _inputPinUsed, int _typeSensorUsed);
     bool setUniteUsed(UNITY_TEMP uniteUsed);
@@ -25,18 +24,16 @@ public:
     float getHumidity();
 
 protected:
+    static const int DEFAUTLT_PIN;
+    DHT *dht;
     int inputPinUsed;
     int UniteUsed;
 
-private:
-
-    static const int DEFAUTLT_PIN;
-    static const float TEMPERATURE_ERREUR;
-    static const float HUMIDITE_ERREUR;
-
-    DHT *dht;
     int typeSensorUsed;
 
+private:
+    static const float TEMPERATURE_ERREUR;
+    static const float HUMIDITE_ERREUR;
     float lastTemperatureRead;
     float lastHumidityRead;
 };

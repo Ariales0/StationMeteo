@@ -9,7 +9,7 @@ class MyTempMock : public MyTemp
 public:
     MyTempMock();
     ~MyTempMock(){};
-
+    bool init(int _inputPinUsed, int _typeSensorUsed);
     float getTemperature();
     float getHumidity();
 

@@ -1,6 +1,6 @@
 #include "MyProjectButton.h"
 
-const int MyProjectButton::DEFAUTLT_NO_PIN_LED = NULL;
+const int MyProjectButton::DEFAUTLT_NO_PIN_LED = -1;
 
 MyProjectButton::MyProjectButton(int _buttonPinUsed)
 {
@@ -25,7 +25,7 @@ bool MyProjectButton::readButton()
     buttonState = digitalRead(buttonPinUsed);
     if (buttonState == LOW && !isPressed)
     {
-        if(ledPinUsed)
+        if(ledPinUsed != -1)
         {
             digitalWrite(ledPinUsed, HIGH);
         }
@@ -35,7 +35,7 @@ bool MyProjectButton::readButton()
     else if (buttonState == HIGH)
     {
         isPressed = false;
-        if(ledPinUsed)
+        if(ledPinUsed != -1)
         {
             digitalWrite(ledPinUsed, LOW);
         }
@@ -47,5 +47,6 @@ bool MyProjectButton::setButtonLed(int pinLedToUsed)
 {
         ledPinUsed = pinLedToUsed;
         pinMode(pinLedToUsed, OUTPUT);
+        return true; 
 }
  
