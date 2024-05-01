@@ -123,13 +123,13 @@ void lectureMyTemp()
       if (humiditySurEcran)
       {
         UNITE_VALEUR = languageMessageManager->getMessage(HUMIDITY);
-        IMAGE = goutteEauHumiditeBMP_IMAGE;
+        IMAGE = GOUTTE_EAU_HUMIDITE_IMAGE;
         derniereHumidite = humiditeObtenue;
       }
       else
       {
         UNITE_VALEUR = languageMessageManager->getMessage(unityMessage);
-        IMAGE = thermometreBMP_IMAGE;
+        IMAGE = THERMOMETRE_IMAGE;
         derniereTemperature = temperatureObtenue;
       }
 
