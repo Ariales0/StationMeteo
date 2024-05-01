@@ -30,9 +30,9 @@ protected:
     int typeSensorUsed;
 
 private:
-    static const float TEMPERATURE_ERREUR;
-    static const float HUMIDITE_ERREUR;
-    static const int DEFAUTLT_PIN;
+    static constexpr float TEMPERATURE_ERREUR = -1000;
+    static constexpr float HUMIDITE_ERREUR = -1;
+    static const int DEFAUTLT_PIN = 32;
     DHT *dht;
     float lastTemperatureRead;
     float lastHumidityRead;

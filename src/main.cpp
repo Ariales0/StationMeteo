@@ -16,7 +16,7 @@
 /*-----------INCLUSIONS-----------*/
 #include <Arduino.h>
 // --- Classes de lib
-#include "MyOled.h"
+#include "MyOledExtend.h"
 #include "MyTemp.h"
 #include "LanguageMessageManager.h"
 #include "MyProjectButton.h"
@@ -56,7 +56,7 @@
 #define BROCHE_LED_JAUNE 16
 
 /*-----------OBJETS-----------*/
-MyOled *myOled = NULL;
+MyOledExtend *myOledExtend = NULL;
 MyTempImplementation *myTemp = NULL;
 LanguageMessageManager *languageMessageManager = NULL;
 MyProjectButton *boutonBleu = NULL;
@@ -67,23 +67,6 @@ MyProjectButton *boutonJaune = NULL;
 // --- Temperature d'erreur revoyé par MyTemp si aucune valeur obtenue
 const float TEMPERATURE_ERREUR = -1000;
 const float HUMIDITE_ERREUR = -1;
-
-// Constante position x et y des chaine caractere
-const int POSITION_X_STATION_METEO = 1;
-const int POSITION_Y_STATION_METEO = 2;
-
-const int POSITION_X_TITRE = 23;
-const int POSITION_Y_TITRE = 20;
-
-const int POSITION_X_DTH_ERREUR = 28;
-const int POSITION_Y_DTH_ERREUR = 35;
-
-const int POSITION_X_BAD_PIN_USED = 10;
-const int POSITION_X_READING_ERROR = 20;
-const int POSITION_Y_ERROR_DETAIL = 50;
-
-const int POSITION_X_VALUE = 18;
-const int POSITION_Y_VALUE = 38;
 
 /*-----------VARIABLES-----------*/
 bool humiditySurEcran = false;               // Etat de l'affichage de l'humidité.
@@ -112,51 +95,12 @@ int decompteMyTempLoop = -1; // Permet de lire la temperature a la premiere bouc
 #pragma endregion DEFINITIONS
 #pragma region METHODES
 
-void rechargeEcran()
-{
-  myOled->clearDisplay();
-  myOled->setTextSize(1);
-  myOled->printIt(POSITION_X_STATION_METEO, POSITION_Y_STATION_METEO, languageMessageManager->getMessage(METEO_STATION), true);
-}
-
-void afficherValeur(float valeur)
-{
-  const char *MESSAGE;
-  const unsigned char *IMAGE;
-  char valeurSTR[7];
-
-  sprintf(valeurSTR, "%.2f", valeur);
-  if (humiditySurEcran)
-  {
-    MESSAGE = languageMessageManager->getMessage(HUMIDITY);
-    IMAGE = goutteEauHumiditeBMP_IMAGE;
-  }
-  else
-  {
-    MESSAGE = languageMessageManager->getMessage(unityMessage);
-    IMAGE = thermometreBMP_IMAGE;
-  }
-
-  rechargeEcran();
-  myOled->printIt(POSITION_X_TITRE, POSITION_Y_TITRE, MESSAGE, true);
-  myOled->setTextSize(2);
-  myOled->printIt(POSITION_X_VALUE, POSITION_Y_VALUE, valeurSTR, true);
-  // Affichage image
-  myOled->drawBitmap(0, 0, IMAGE, SCREEN_WIDTH, SCREEN_HEIGHT, WHITE);
-  myOled->display();
-  actualiserAffichage = false;
-}
-
-void erreurLectureValeur()
-{
-  rechargeEcran();
-  myOled->printIt(POSITION_X_DTH_ERREUR, POSITION_Y_DTH_ERREUR, languageMessageManager->getMessage(DHT22_ERROR), true);
-  myOled->printIt(POSITION_X_READING_ERROR, POSITION_Y_ERROR_DETAIL, languageMessageManager->getMessage(READING_ERROR), true);
-}
-
 /**
  * lectureMyTemp()
  *
+ * @date Mise à jour : 30/04/2024
+ * Ajustement avec MyOledExtend
+ * 
  * @brief Méthode appelée dans la boucle principale pour afficher la température ou l'humidité sur l'écran OLED.
  * L'humidité ou la temprérature est lue.
  * Si la valeur est différente de la dernière valeur obtenue ou si l'affichage est à actualiser on affiche sur l'écran OLED.
@@ -164,19 +108,41 @@ void erreurLectureValeur()
 void lectureMyTemp()
 {
 
-  float temperatureObtenue = 0;
-  float humiditeObtenue = 0;
+  float temperatureObtenue = derniereTemperature;
+  float humiditeObtenue = derniereHumidite;
   float valeurObtenue = (humiditySurEcran) ? humiditeObtenue = myTemp->getHumidity() : temperatureObtenue = myTemp->getTemperature();
   if ((valeurObtenue != HUMIDITE_ERREUR) && (valeurObtenue != TEMPERATURE_ERREUR))
   {
     if (humiditeObtenue != derniereHumidite || temperatureObtenue != derniereTemperature || actualiserAffichage)
     {
-      afficherValeur(valeurObtenue);
+      const char *UNITE_VALEUR;
+      const unsigned char *IMAGE;
+      myOledExtend->rechargerEcran(languageMessageManager->getMessage(METEO_STATION));
+      myOledExtend->afficherValeur(valeurObtenue);
+
+      if (humiditySurEcran)
+      {
+        UNITE_VALEUR = languageMessageManager->getMessage(HUMIDITY);
+        IMAGE = goutteEauHumiditeBMP_IMAGE;
+        derniereHumidite = humiditeObtenue;
+      }
+      else
+      {
+        UNITE_VALEUR = languageMessageManager->getMessage(unityMessage);
+        IMAGE = thermometreBMP_IMAGE;
+        derniereTemperature = temperatureObtenue;
+      }
+
+      myOledExtend->afficherTitre(UNITE_VALEUR);
+      myOledExtend->afficherImageBMP128x64(IMAGE);
+      actualiserAffichage = false;
     }
   }
   else
   {
-    erreurLectureValeur();
+    myOledExtend->rechargerEcran(languageMessageManager->getMessage(METEO_STATION));
+    myOledExtend->afficherSousTitre(languageMessageManager->getMessage(DHT22_ERROR));
+    myOledExtend->afficherErreur(languageMessageManager->getMessage(READING_ERROR));
   }
 }
 
@@ -184,6 +150,9 @@ void lectureMyTemp()
 /**
  * lectureBoutons()
  *
+ * @date Mise à jour : 30/04/2024
+ * Ajustement avec MyOledExtend
+ * 
  * @brief Lit l'état des boutons et effectue les actions associées.
  */
 void lectureBoutons()
@@ -219,12 +188,16 @@ void lectureBoutons()
     lectureMyTemp();
   }
 }
+
 #pragma endregion METHODES
 #pragma region FONCTIONS
 
 /**
  * Fonction setup()
  *
+ * @date Mise à jour : 30/04/2024
+ * Ajustement avec MyOledExtend
+ * 
  * @brief Initialise le programme en configurant les éléments nécessaires au démarrage.
  */
 void setup()
@@ -234,34 +207,28 @@ void setup()
 
   /*-----------MyScreenString-----------*/
   languageMessageManager = new LanguageMessageManager();
-  while (!languageMessageManager)
-    ;
-
+  while (!languageMessageManager);
   languageMessageManager->setLanguageUsed(langueUtilisee);
 
   /*---------------MyOled---------------*/
-  myOled = new MyOled(&Wire, OLED_RESET, SCREEN_HEIGHT, SCREEN_WIDTH);
-  while (!myOled)
-    ;
-
-  while (myOled->init(DISPLAY_SPLASH_TIME) == 1)
-    ;
-
+  myOledExtend = new MyOledExtend(&Wire, OLED_RESET, SCREEN_HEIGHT, SCREEN_WIDTH);
+  while (!myOledExtend);
+  while (myOledExtend->init(DISPLAY_SPLASH_TIME) == 1);
   delay(DELAI_MY_OLED);
-  rechargeEcran();
+  myOledExtend->rechargerEcran(languageMessageManager->getMessage(METEO_STATION));
 
   /*---------------MyTemp---------------*/
   myTemp = new MyTempImplementation();
   while (!myTemp)
   {
-    myOled->printIt(POSITION_X_TITRE, POSITION_Y_TITRE, languageMessageManager->getMessage(INSTANTIATION), true);
-    myOled->printIt(POSITION_X_DTH_ERREUR, POSITION_Y_DTH_ERREUR, languageMessageManager->getMessage(DHT22_ERROR), true);
+    myOledExtend->afficherTitre(languageMessageManager->getMessage(INSTANTIATION));
+    myOledExtend->afficherSousTitre(languageMessageManager->getMessage(DHT22_ERROR));
   }
   while (!myTemp->init(DHTPIN, DHTTYPE))
   {
-    myOled->printIt(POSITION_X_TITRE, POSITION_Y_TITRE, languageMessageManager->getMessage(INITIALISATION), true);
-    myOled->printIt(POSITION_X_DTH_ERREUR, POSITION_Y_DTH_ERREUR, languageMessageManager->getMessage(DHT22_ERROR), true);
-    myOled->printIt(POSITION_X_BAD_PIN_USED, POSITION_Y_ERROR_DETAIL, languageMessageManager->getMessage(PIN_PROBLEM), true);
+    myOledExtend->afficherTitre(languageMessageManager->getMessage(INITIALISATION));
+    myOledExtend->afficherSousTitre(languageMessageManager->getMessage(DHT22_ERROR));
+    myOledExtend->afficherErreur(languageMessageManager->getMessage(PIN_PROBLEM));
   }
   myTemp->setUniteUsed(uniteTempUtilise);
 
@@ -275,13 +242,13 @@ void setup()
 
   while (!boutonBleu || !boutonVert || !boutonJaune)
   {
-    myOled->printIt(POSITION_X_TITRE, POSITION_Y_TITRE, languageMessageManager->getMessage(INSTANTIATION), true);
-    myOled->printIt(POSITION_X_DTH_ERREUR, POSITION_Y_DTH_ERREUR, languageMessageManager->getMessage(BUTTON_ERROR), true);
+    myOledExtend->afficherTitre(languageMessageManager->getMessage(INSTANTIATION));
+    myOledExtend->afficherSousTitre(languageMessageManager->getMessage(DHT22_ERROR));
   }
   while (!boutonBleu->init() || !boutonVert->init() || !boutonJaune->init())
   {
-    myOled->printIt(POSITION_X_TITRE, POSITION_Y_TITRE, languageMessageManager->getMessage(INITIALISATION), true);
-    myOled->printIt(POSITION_X_DTH_ERREUR, POSITION_Y_DTH_ERREUR, languageMessageManager->getMessage(BUTTON_ERROR), true);
+    myOledExtend->afficherTitre(languageMessageManager->getMessage(INITIALISATION));
+    myOledExtend->afficherSousTitre(languageMessageManager->getMessage(BUTTON_ERROR));
   }
   // Faire le lien entre une led et son bouton
   boutonBleu->setButtonLed(BROCHE_LED_BLEU);

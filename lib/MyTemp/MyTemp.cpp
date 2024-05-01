@@ -10,11 +10,6 @@
  */
 #include "MyTemp.h"
 
-const int MyTemp::DEFAUTLT_PIN = 32;
-// Température initialisé, inferieur à la valeur minimum que peut lire le capteur (fahrenheit -40° et celsius -40°)
-const float MyTemp::TEMPERATURE_ERREUR = -1000;
-const float MyTemp::HUMIDITE_ERREUR = -1;
-
 /**
  * MyTemp Constructeur de la classe MyTemp
  *
