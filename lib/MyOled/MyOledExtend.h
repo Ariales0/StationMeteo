@@ -30,7 +30,7 @@ public:
 
 private:
     int positionX_Centre(const char *MESSAGE);
-    
+
     static const uint8_t DEFAULT_SCREEN_WIDTH = 128;
     static const uint8_t DEFAULT_SCREEN_HEIGHT = 64;
     static const uint8_t DEFAULT_SCREEN_RESET = 4;
@@ -41,7 +41,7 @@ private:
     static const int POSITION_Y_EN_TETE = 2;
     static const int POSITION_Y_TITRE = 20;
     static const int POSITION_Y_SOUS_TITRE = 35;
-    static const int POSITION_Y_ERROR_DETAIL = 50;
+    static const int POSITION_Y_ERREUR_DETAIL = 50;
     static const int POSITION_X_VALUE = 23;
     static const int POSITION_Y_VALUE = 38;
 };

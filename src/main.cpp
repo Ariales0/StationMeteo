@@ -24,7 +24,7 @@
 #include "Enums.cpp"
 #include "ImagesBMP.cpp"
 
-// #define MYTEMP_MOCK
+#define MYTEMP_MOCK
 #ifdef MYTEMP_MOCK
 #define MyTempImplementation MyTempMock
 #include "MyTempMock.h"
@@ -89,7 +89,7 @@ const int DISPLAY_SPLASH_TIME = 1000;      // Temps en millisecondes pour l'init
 const int DELAY_LED_INITIALISATION = 1000; // Temps pour lequel les leds reste allumees en millisecondes
 
 // On appelle les méthodes de MyTemp (DELAI_MY_TEMP / DELAI_LOOP) fois par loop. Ainsi, on peut lire rapidement les boutons et lire les données du DTH22 toutes les 2s.
-const int DIVIEUR_MYTEMP_LOOP = DELAI_MY_TEMP / DELAI_LOOP;
+const int DIVISEUR_MYTEMP_LOOP = DELAI_MY_TEMP / DELAI_LOOP;
 int decompteMyTempLoop = -1; // Permet de lire la temperature a la premiere boucle
 #pragma endregion DEFINITIONS
 #pragma region METHODES
@@ -201,7 +201,7 @@ void setup()
 
   /*-----------MyScreenString-----------*/
   languageMessageManager = new LanguageMessageManager();
-  while (!languageMessageManager && !languageMessageManager->setLanguageUsed(langueUtilisee));
+  while (!languageMessageManager || !languageMessageManager->setLanguageUsed(langueUtilisee));
 
   /*---------------MyOled---------------*/
   myOledExtend = new MyOledExtend(&Wire, OLED_RESET, SCREEN_HEIGHT, SCREEN_WIDTH);
@@ -217,7 +217,7 @@ void setup()
     myOledExtend->afficherTitre(languageMessageManager->getMessage(INSTANTIATION));
     myOledExtend->afficherSousTitre(languageMessageManager->getMessage(DHT22_ERROR));
   }
-  while (!myTemp->init(DHTPIN, DHTTYPE) && !myTemp->setUniteUsed(uniteTempUtilise))
+  while (!myTemp->init(DHTPIN, DHTTYPE) || !myTemp->setUniteUsed(uniteTempUtilise))
   {
     myOledExtend->afficherTitre(languageMessageManager->getMessage(INITIALISATION));
     myOledExtend->afficherSousTitre(languageMessageManager->getMessage(DHT22_ERROR));
@@ -235,7 +235,7 @@ void setup()
   while (!boutonBleu || !boutonVert || !boutonJaune)
   {
     myOledExtend->afficherTitre(languageMessageManager->getMessage(INSTANTIATION));
-    myOledExtend->afficherSousTitre(languageMessageManager->getMessage(DHT22_ERROR));
+    myOledExtend->afficherSousTitre(languageMessageManager->getMessage(BUTTON_ERROR));
   }
   while (!boutonBleu->init() || !boutonVert->init() || !boutonJaune->init())
   {
@@ -259,7 +259,7 @@ void loop()
 
   if (decompteMyTempLoop < 0)
   {
-    decompteMyTempLoop = DIVIEUR_MYTEMP_LOOP;
+    decompteMyTempLoop = DIVISEUR_MYTEMP_LOOP;
     lectureMyTemp();
   }
 

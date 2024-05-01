@@ -79,7 +79,7 @@ void MyOledExtend::afficherSousTitre(const char *SOUS_TITRE)
 */
 void MyOledExtend::afficherErreur(const char *ERREUR_DETAILS)
 {
-    printIt(positionX_Centre(ERREUR_DETAILS), POSITION_Y_ERROR_DETAIL, ERREUR_DETAILS, true);
+    printIt(positionX_Centre(ERREUR_DETAILS), POSITION_Y_ERREUR_DETAIL, ERREUR_DETAILS, true);
 }
 /**
  * 
