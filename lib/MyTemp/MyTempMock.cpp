@@ -14,7 +14,7 @@
  * Constructeur de la classe
  * Instanciation des constantes à la création de la classe
  */
-MyTempMock ::MyTempMock() : MAX_VALUE_POT(4095), INFERIOR_TEMPERATURE(-40), SUPERIOR_TEMPERATURE(80), INFERIOR_HUMIDITY(0), SUPERIOR_HUMIDITY(100)
+MyTempMock ::MyTempMock()
 {
   inferiorTemperature = INFERIOR_TEMPERATURE;
   supperiorTemperature = SUPERIOR_TEMPERATURE;

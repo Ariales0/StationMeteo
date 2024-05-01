@@ -18,7 +18,7 @@ LanguageMessageManager::LanguageMessageManager()
     setLanguageUsed(FRENCH);
 
     // Initialisation des messages en français et en anglais pour l'ecran l'affichage
-    MESSAGES[METEO_STATION][FRENCH] = "Station Méteo";
+    MESSAGES[METEO_STATION][FRENCH] = "Station Meteo";
     MESSAGES[METEO_STATION][ENGLISH] = "Weather Channel";
 
     MESSAGES[DHT22_ERROR][FRENCH] = "DHT22:ERREUR";
@@ -64,10 +64,16 @@ const char* LanguageMessageManager::getMessage(MESSAGE_KEYS key)
  * Mutateur setLanguage
  * 
  * @brief Permet de choisir la langue utiliée
+ * @return true Si la valeur passé est correct
 */
-void LanguageMessageManager::setLanguageUsed(LANGUAGE language) 
+bool LanguageMessageManager::setLanguageUsed(LANGUAGE language) 
 {
-    currentLanguage = language;
+    if (language == FRENCH || language == ENGLISH)
+    {
+        currentLanguage = language;
+        return true;
+    }
+    return false;
 }
 
 

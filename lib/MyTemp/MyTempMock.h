@@ -24,15 +24,15 @@ public:
     float getHumidity();
 
 private:
-    const float MAX_VALUE_POT;
-    const int INFERIOR_TEMPERATURE;
-    const int SUPERIOR_TEMPERATURE;
-    const int INFERIOR_HUMIDITY;
-    const int SUPERIOR_HUMIDITY;
+    const float MAX_VALUE_POT = 4095;
+    const int INFERIOR_TEMPERATURE = -40; //Temperature minimale qu'un DHT22 peut lire
+    const int SUPERIOR_TEMPERATURE = 80;  //Temperature maximale qu'un DHT22 peut lire
+    const int INFERIOR_HUMIDITY = 0;
+    const int SUPERIOR_HUMIDITY = 100;
 
-    float inferiorTemperature; //En celsius
-    float supperiorTemperature; //En celsius
-    float inferiorHumidity; //En pourcent
-    float supperiorHumidity; //En pourcent
+    float inferiorTemperature;
+    float supperiorTemperature;
+    float inferiorHumidity;
+    float supperiorHumidity;
 };
 #endif

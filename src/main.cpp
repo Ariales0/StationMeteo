@@ -105,7 +105,6 @@ int decompteMyTempLoop = -1; // Permet de lire la temperature a la premiere bouc
  */
 void lectureMyTemp()
 {
-
   float temperatureObtenue = derniereTemperature;
   float humiditeObtenue = derniereHumidite;
   float valeurObtenue = (humiditySurEcran) ? humiditeObtenue = myTemp->getHumidity() : temperatureObtenue = myTemp->getTemperature();
@@ -138,6 +137,7 @@ void lectureMyTemp()
   }
   else
   {
+    (humiditySurEcran) ? derniereHumidite = valeurObtenue : derniereTemperature = valeurObtenue;
     myOledExtend->rechargerEcran(languageMessageManager->getMessage(METEO_STATION));
     myOledExtend->afficherSousTitre(languageMessageManager->getMessage(DHT22_ERROR));
     myOledExtend->afficherErreur(languageMessageManager->getMessage(READING_ERROR));
@@ -201,8 +201,7 @@ void setup()
 
   /*-----------MyScreenString-----------*/
   languageMessageManager = new LanguageMessageManager();
-  while (!languageMessageManager);
-  languageMessageManager->setLanguageUsed(langueUtilisee);
+  while (!languageMessageManager && !languageMessageManager->setLanguageUsed(langueUtilisee));
 
   /*---------------MyOled---------------*/
   myOledExtend = new MyOledExtend(&Wire, OLED_RESET, SCREEN_HEIGHT, SCREEN_WIDTH);
@@ -218,13 +217,12 @@ void setup()
     myOledExtend->afficherTitre(languageMessageManager->getMessage(INSTANTIATION));
     myOledExtend->afficherSousTitre(languageMessageManager->getMessage(DHT22_ERROR));
   }
-  while (!myTemp->init(DHTPIN, DHTTYPE))
+  while (!myTemp->init(DHTPIN, DHTTYPE) && !myTemp->setUniteUsed(uniteTempUtilise))
   {
     myOledExtend->afficherTitre(languageMessageManager->getMessage(INITIALISATION));
     myOledExtend->afficherSousTitre(languageMessageManager->getMessage(DHT22_ERROR));
     myOledExtend->afficherErreur(languageMessageManager->getMessage(PIN_PROBLEM));
   }
-  myTemp->setUniteUsed(uniteTempUtilise);
 
   /*-----------MyProjectButton----------*/
   // Bouton bleu - Permet de changer le unité de la température entre Celsius et Fahrenheit.

@@ -17,7 +17,7 @@ class LanguageMessageManager
 {
 public:
     LanguageMessageManager();
-    void setLanguageUsed(LANGUAGE language);
+    bool setLanguageUsed(LANGUAGE language);
     const char* getMessage(MESSAGE_KEYS key);
 
 private:
