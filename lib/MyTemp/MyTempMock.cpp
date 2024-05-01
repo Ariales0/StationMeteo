@@ -27,8 +27,8 @@ MyTempMock ::MyTempMock() : MAX_VALUE_POT(4095), INFERIOR_TEMPERATURE(-40), SUPE
  * Initialisation init
  * Inialise les attribut protege de la classe MyTemp
  *
- * @param int _inputPinUsed numero du faux capteur (potentiometre)
- * @param int _typeSensorUsed Type de capteur
+ * @param _inputPinUsed numero du faux capteur (potentiometre)
+ * @param _typeSensorUsed Type de capteur
  *
  * @return true
  */

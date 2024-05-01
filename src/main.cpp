@@ -91,10 +91,8 @@ const int DELAY_LED_INITIALISATION = 1000; // Temps pour lequel les leds reste a
 // On appelle les méthodes de MyTemp (DELAI_MY_TEMP / DELAI_LOOP) fois par loop. Ainsi, on peut lire rapidement les boutons et lire les données du DTH22 toutes les 2s.
 const int DIVIEUR_MYTEMP_LOOP = DELAI_MY_TEMP / DELAI_LOOP;
 int decompteMyTempLoop = -1; // Permet de lire la temperature a la premiere boucle
-
 #pragma endregion DEFINITIONS
 #pragma region METHODES
-
 /**
  * lectureMyTemp()
  *
@@ -145,8 +143,6 @@ void lectureMyTemp()
     myOledExtend->afficherErreur(languageMessageManager->getMessage(READING_ERROR));
   }
 }
-
-
 /**
  * lectureBoutons()
  *
@@ -188,10 +184,8 @@ void lectureBoutons()
     lectureMyTemp();
   }
 }
-
 #pragma endregion METHODES
 #pragma region FONCTIONS
-
 /**
  * Fonction setup()
  *
@@ -256,7 +250,6 @@ void setup()
   boutonJaune->setButtonLed(BROCHE_LED_JAUNE);
   delay(DELAY_LED_INITIALISATION);
 }
-
 /**
  * Fonction loop()
  *

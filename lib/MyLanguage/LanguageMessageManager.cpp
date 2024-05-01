@@ -9,7 +9,9 @@
  * @date Dernière mise à jour : 27/04/2024
  */
 #include "LanguageMessageManager.h"
-
+/**
+ * Constructeur de la classe
+*/
 LanguageMessageManager::LanguageMessageManager() 
 {
     
@@ -46,16 +48,23 @@ LanguageMessageManager::LanguageMessageManager()
     MESSAGES[READING_ERROR][FRENCH] = "Erreur de lecture";
     MESSAGES[READING_ERROR][ENGLISH] = "Reading error";
 }
-
-LanguageMessageManager::~LanguageMessageManager() {}
-
-
-
+/**
+ * Accesseur getMessage
+ * 
+ * @brief Permet d'obtenir un message à partir de sa clé
+ * 
+ * @param key Clé du message à retourner
+ * @return MESSAGES Le message en fonction de la clè et de la langue
+*/
 const char* LanguageMessageManager::getMessage(MESSAGE_KEYS key) 
 {
     return MESSAGES[key][currentLanguage];
 }
-
+/**
+ * Mutateur setLanguage
+ * 
+ * @brief Permet de choisir la langue utiliée
+*/
 void LanguageMessageManager::setLanguageUsed(LANGUAGE language) 
 {
     currentLanguage = language;

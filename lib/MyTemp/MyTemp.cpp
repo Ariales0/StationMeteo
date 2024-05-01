@@ -29,8 +29,8 @@ MyTemp::MyTemp()
  * @brief Initialisation des dernieres valeurs par les valeurs d'erreur
  * 
  *
- * @param int _inputPinUsed Pin alloué aux données du capteur, valeur par défaut = DEFAUTLT_PIN
- * @param int _typeSensorUsed Type de capteur DHT (DHT11, DHT22...)
+ * @param _inputPinUsed Pin alloué aux données du capteur, valeur par défaut = DEFAUTLT_PIN
+ * @param _typeSensorUsed Type de capteur DHT (DHT11, DHT22...)
  * @return true si l'initialisation est réussie, false sinon
  */
 bool MyTemp::init(int _inputPinUsed = DEFAUTLT_PIN, int _typeSensorUsed = DHT22)
@@ -55,7 +55,7 @@ bool MyTemp::init(int _inputPinUsed = DEFAUTLT_PIN, int _typeSensorUsed = DHT22)
  * Mutateur setUniteUsed
  * Initialise l'attribut UniteUsed avec l'unité de température à afficher.
  *
- * @param UNITY_TEMP uniteUsed Unité de température à afficher, valeur par défaut = UNITY_FARHENHEIT
+ * @param uniteUsed Unité de température à afficher, valeur par défaut = UNITY_FARHENHEIT
  * @return true si l'unité est valide et a été définie avec succès, false sinon
  */
 bool MyTemp::setUniteUsed(UNITY_TEMP uniteUsed)
