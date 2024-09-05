@@ -5,6 +5,7 @@
 enum LANGUAGE {
     FRENCH,
     ENGLISH,
+    SPANISH,
     LANGUAGES_NUMBER
 };
 
